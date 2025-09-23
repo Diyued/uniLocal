@@ -4,9 +4,15 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 sealed class RouteScreen {
-    @Serializable
-    object Auth : RouteScreen()
 
     @Serializable
-    object Home : RouteScreen()
+    data object Home : RouteScreen()
+
+    @Serializable
+    data object Login : RouteScreen()
+
+    @Serializable
+    data object Register : RouteScreen()
+
+
 }

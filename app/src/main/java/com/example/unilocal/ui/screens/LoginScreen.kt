@@ -10,7 +10,10 @@ import com.example.unilocal.ui.components.CustomButton
 import com.example.unilocal.ui.components.CustomTextField
 
 @Composable
-fun LoginScreen(onLoginClick: () -> Unit) {
+fun LoginScreen(
+    onLoginClick: () -> Unit,
+    onRegisterClick: () -> Unit
+) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var rememberMe by remember { mutableStateOf(false) }
@@ -47,6 +50,9 @@ fun LoginScreen(onLoginClick: () -> Unit) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Text("Don’t have an account? Sign Up", style = MaterialTheme.typography.bodySmall)
+        TextButton(onClick = { onRegisterClick() }) {
+            Text("Don’t have an account? Sign Up", style = MaterialTheme.typography.bodySmall)
+        }
+
     }
 }

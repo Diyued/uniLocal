@@ -11,16 +11,12 @@ import com.example.unilocal.ui.screens.Navigation
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            UniLocalTheme {
-                LoginScreen(
-                    onLoginClick = {
-                        // Aquí por ahora solo mostramos un log o navegas
-                        println("Login clicked 🚀")
-                    }
-                )
-
+        setContent (
+            content = {
+                UniLocalTheme {
+                    Navigation()
+                }
             }
-        }
+        )
     }
 }

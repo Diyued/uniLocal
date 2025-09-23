@@ -17,21 +17,24 @@ import com.example.unilocal.ui.theme.UniLocalTheme
 fun Navigation() {
     val navController = rememberNavController()
 
-    Surface (modifier = Modifier.fillMaxSize()) {
-        NavHost(
-            navController = navController,
-            startDestination = RouteScreen.Auth
-        ) {
-            composable<RouteScreen.Auth> {
-                LoginScreen(
-                    onLoginClick = {
-                        navController.navigate(RouteScreen.Home)
-                    }
+    NavHost(
+        navController = navController,
+        startDestination = RouteScreen.Login
+    ) {
+        composable<RouteScreen.Login> {
+            LoginScreen(
+                onLoginClick = {
+                    navController.navigate(RouteScreen.Home)
+                },
 
-                )
-            }
+                onRegisterClick = {
+                    navController.navigate(RouteScreen.Register)
+                }
+            )
+        }
 
-
+        composable<RouteScreen.Register> {
+            RegisterScreen()
         }
     }
 }
