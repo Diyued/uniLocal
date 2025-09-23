@@ -51,8 +51,11 @@ fun UniLocalTheme(
     }
 
     MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
+        colorScheme = MaterialTheme.colorScheme.copy(
+            primary = BluePrimary,
+            secondary = GrayText
+        ),
+        typography = MaterialTheme.typography,
         content = content
     )
 }
