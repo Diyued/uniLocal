@@ -45,9 +45,9 @@ fun Navigation() {
 
         composable<RouteScreen.Home> {
             HomeUser(
-                onNavigateCreatePlace = {
-                    navController.navigate(RouteScreen.CreatePlace)
-                }
+                //onNavigateCreatePlace = {
+                //    navController.navigate(RouteScreen.CreatePlace)
+                //}
             )
         }
 
