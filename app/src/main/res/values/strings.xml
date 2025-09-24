@@ -10,4 +10,10 @@
     <string name="login">Log in</string>
     <string name="no_account">Don’t have an account?</string>
     <string name="sign_up">Sign Up</string>
+
+    <!-- Home -->
+    <string name="home_title">uniLocal</string>
+    <string name="btn_home">Home</string>"
+    <string name="btn_favorites">Favorites</string>
+    <string name="btn_add_place">Add place</string>
 </resources>

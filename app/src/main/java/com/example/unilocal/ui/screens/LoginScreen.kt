@@ -11,7 +11,7 @@ import com.example.unilocal.ui.components.CustomTextField
 
 @Composable
 fun LoginScreen(
-    onLoginClick: () -> Unit,
+    onNavigateHome: () -> Unit,
     onRegisterClick: () -> Unit
 ) {
     var email by remember { mutableStateOf("") }
@@ -47,7 +47,11 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            CustomButton(text = "Log in", onClick = onLoginClick)
+            CustomButton(text = "Log in", onClick = {
+                if (email == "juan@gmail.com" && password == "123456"){
+                    onNavigateHome()
+                }
+            })
 
             Spacer(modifier = Modifier.height(20.dp))
 

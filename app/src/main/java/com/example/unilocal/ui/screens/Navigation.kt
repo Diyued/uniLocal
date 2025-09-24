@@ -13,6 +13,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
 import com.example.unilocal.ui.theme.UniLocalTheme
+import com.example.unilocal.ui.user.HomeUser
+
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
@@ -23,7 +25,7 @@ fun Navigation() {
     ) {
         composable<RouteScreen.Login> {
             LoginScreen(
-                onLoginClick = {
+                onNavigateHome = {
                     navController.navigate(RouteScreen.Home)
                 },
 
@@ -40,5 +42,10 @@ fun Navigation() {
                 }
             )
         }
+
+        composable<RouteScreen.Home> {
+            HomeUser()
+        }
+
     }
 }
