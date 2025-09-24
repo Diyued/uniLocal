@@ -1,36 +1,32 @@
 package com.example.unilocal.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.unilocal.R
 import com.example.unilocal.ui.components.CustomButton
 import com.example.unilocal.ui.components.CustomTextField
 
 @Composable
-fun RegisterScreen (
+fun RegisterScreen(
     onLoginClick: () -> Unit
 ) {
-
     var name by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var city by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
+    // Estados de error
+    var nameError by remember { mutableStateOf<String?>(null) }
+    var usernameError by remember { mutableStateOf<String?>(null) }
+    var emailError by remember { mutableStateOf<String?>(null) }
+    var cityError by remember { mutableStateOf<String?>(null) }
+    var passwordError by remember { mutableStateOf<String?>(null) }
 
     Surface {
         Column(
@@ -40,37 +36,150 @@ fun RegisterScreen (
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-
-            Text("Create an Account", style = MaterialTheme.typography.titleLarge)
-            Text("Sign up now to get started with an account.", style = MaterialTheme.typography.bodyMedium)
+            Text(
+                text = stringResource(id = R.string.txt_register_title),
+                style = MaterialTheme.typography.titleLarge
+            )
+            Text(
+                text = stringResource(id = R.string.txt_register_subtitle),
+                style = MaterialTheme.typography.bodyMedium
+            )
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            CustomTextField(label = "Full name", value = name, onValueChange = { name = it })
+            // Full name
+            Column(modifier = Modifier.fillMaxWidth()) {
+                CustomTextField(
+                    label = stringResource(id = R.string.txt_full_name),
+                    value = name,
+                    onValueChange = {
+                        name = it
+                        nameError = null
+                    }
+                )
+                if (nameError != null) {
+                    Text(nameError!!, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+                }
+            }
+
             Spacer(modifier = Modifier.height(12.dp))
 
-            CustomTextField(label = "Username", value = username, onValueChange = { username = it })
+            // Username
+            Column(modifier = Modifier.fillMaxWidth()) {
+                CustomTextField(
+                    label = stringResource(id = R.string.txt_username),
+                    value = username,
+                    onValueChange = {
+                        username = it
+                        usernameError = null
+                    }
+                )
+                if (usernameError != null) {
+                    Text(usernameError!!, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+                }
+            }
+
             Spacer(modifier = Modifier.height(12.dp))
 
-            CustomTextField(label = "Email", value = email, onValueChange = { email = it })
+            // Email
+            Column(modifier = Modifier.fillMaxWidth()) {
+                CustomTextField(
+                    label = stringResource(id = R.string.txt_email),
+                    value = email,
+                    onValueChange = {
+                        email = it
+                        emailError = null
+                    }
+                )
+                if (emailError != null) {
+                    Text(emailError!!, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+                }
+            }
+
             Spacer(modifier = Modifier.height(12.dp))
 
-            CustomTextField(label = "City", value = city, onValueChange = { city = it })
+            // City
+            Column(modifier = Modifier.fillMaxWidth()) {
+                CustomTextField(
+                    label = stringResource(id = R.string.txt_city),
+                    value = city,
+                    onValueChange = {
+                        city = it
+                        cityError = null
+                    }
+                )
+                if (cityError != null) {
+                    Text(cityError!!, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+                }
+            }
+
             Spacer(modifier = Modifier.height(12.dp))
 
-            CustomTextField(label = "Password", value = password, onValueChange = { password = it }, isPassword = true)
-            Spacer(modifier = Modifier.height(12.dp))
+            // Password
+            Column(modifier = Modifier.fillMaxWidth()) {
+                CustomTextField(
+                    label = stringResource(id = R.string.txt_password),
+                    value = password,
+                    onValueChange = {
+                        password = it
+                        passwordError = null
+                    },
+                    isPassword = true
+                )
+                if (passwordError != null) {
+                    Text(passwordError!!, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+                }
+            }
 
-            CustomButton(text = "Sign Up", onClick = { /* TODO: Handle sign up */ })
+            Spacer(modifier = Modifier.height(20.dp))
 
-            TextButton(onClick = {
-                onLoginClick()
-            }) {
-                Text("Already have an account? Log in")
+            // Sign Up button
+            CustomButton(
+                text = stringResource(id = R.string.btn_sign_up),
+                onClick = {
+                    var hasError = false
+
+                    if (name.isBlank()) {
+                        nameError = "Full name is required"
+                        hasError = true
+                    }
+                    if (username.isBlank()) {
+                        usernameError = "Username is required"
+                        hasError = true
+                    }
+                    if (email.isBlank()) {
+                        emailError = "Email is required"
+                        hasError = true
+                    } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                        emailError = "Invalid email format"
+                        hasError = true
+                    }
+                    if (city.isBlank()) {
+                        cityError = "City is required"
+                        hasError = true
+                    }
+                    if (password.isBlank()) {
+                        passwordError = "Password is required"
+                        hasError = true
+                    } else if (password.length < 6) {
+                        passwordError = "Password must be at least 6 characters"
+                        hasError = true
+                    }
+
+                    if (!hasError) {
+                        // TODO: Handle sign up (ej: enviar a backend o navegar)
+                    }
+                }
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            TextButton(onClick = { onLoginClick() }) {
+                Text(
+                    text = stringResource(id = R.string.txt_already_have_account),
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
         }
     }
-
-
-
 }
