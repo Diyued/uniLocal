@@ -21,7 +21,9 @@ import androidx.compose.ui.res.stringResource
 import com.example.unilocal.R
 
 @Composable
-fun HomeUser () {
+fun HomeUser (
+    onNavigateCreatePlace: () -> Unit
+) {
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
