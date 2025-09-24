@@ -1,16 +1,22 @@
 <resources>
     <string name="app_name">uniLocal</string>
     <!-- Login -->
-    <string name="login_title">Log in to your Account</string>
-    <string name="login_subtitle">Welcome back, please enter your details.</string>
-    <string name="email">Email Address</string>
-    <string name="password">Password</string>
-    <string name="remember_me">Remember me</string>
-    <string name="forgot_password">Forgot Password?</string>
-    <string name="login">Log in</string>
-    <string name="no_account">Don’t have an account?</string>
-    <string name="sign_up">Sign Up</string>
-
+    <string name="txt_login_title">Log in to your Account</string>
+    <string name="txt_login_subtitle">Welcome back, please enter your details.</string>
+    <string name="txt_email">Email Address</string>
+    <string name="txt_password">Password</string>
+    <string name="checkbox_remember_me">Remember me</string>
+    <string name="txt_forgot_password">Forgot Password?</string>
+    <string name="btn_login">Log in</string>
+    <string name="txt_no_account">Don’t have an account?</string>
+    <string name="btn_sign_up">Sign Up</string>
+    <!-- Register -->
+    <string name="txt_register_title">Create an Account</string>
+    <string name="txt_register_subtitle">Sign up now to get started with an account.</string>
+    <string name="txt_full_name">Full name</string>
+    <string name="txt_username">Username</string>
+    <string name="txt_city">City</string>
+    <string name="txt_already_have_account">Already have an account? Log in</string>
     <!-- Home -->
     <string name="home_title">uniLocal</string>
     <string name="btn_home">Home</string>"

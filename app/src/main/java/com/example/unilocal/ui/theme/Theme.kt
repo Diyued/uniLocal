@@ -12,14 +12,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = BluePrimary,
+    secondary = GrayText,
+    //tertiary = Pink80
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
+    primary = BluePrimary,
+    secondary = GrayText,
     tertiary = Pink40
 
     /* Other default colors to override
@@ -51,10 +51,7 @@ fun UniLocalTheme(
     }
 
     MaterialTheme(
-        colorScheme = MaterialTheme.colorScheme.copy(
-            primary = BluePrimary,
-            secondary = GrayText
-        ),
+        colorScheme = colorScheme,
         typography = MaterialTheme.typography,
         content = content
     )
