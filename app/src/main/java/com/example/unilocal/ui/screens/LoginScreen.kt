@@ -18,41 +18,47 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
     var rememberMe by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text("Log in to your Account", style = MaterialTheme.typography.titleLarge)
-        Text("Welcome back, please enter your details.", style = MaterialTheme.typography.bodyMedium)
+    Surface {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text("Log in to your Account", style = MaterialTheme.typography.titleLarge)
+            Text("Welcome back, please enter your details.", style = MaterialTheme.typography.bodyMedium)
 
-        Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
-        CustomTextField(label = "Email Address", value = email, onValueChange = { email = it })
-        Spacer(modifier = Modifier.height(12.dp))
-        CustomTextField(label = "Password", value = password, onValueChange = { password = it }, isPassword = true)
+            CustomTextField(label = "Email Address", value = email, onValueChange = { email = it })
+            Spacer(modifier = Modifier.height(12.dp))
+            CustomTextField(label = "Password", value = password, onValueChange = { password = it }, isPassword = true)
 
-        Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-            Checkbox(checked = rememberMe, onCheckedChange = { rememberMe = it })
-            Text("Remember me", modifier = Modifier.weight(1f))
-            TextButton(onClick = { /* TODO: Forgot Password */ }) {
-                Text("Forgot Password?")
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                Checkbox(checked = rememberMe, onCheckedChange = { rememberMe = it })
+                Text("Remember me", modifier = Modifier.weight(1f))
+                TextButton(onClick = { /* TODO: Forgot Password */ }) {
+                    Text("Forgot Password?")
+                }
             }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            CustomButton(text = "Log in", onClick = onLoginClick)
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            TextButton(onClick = { onRegisterClick() }) {
+                Text("Don’t have an account? Sign Up", style = MaterialTheme.typography.bodySmall)
+            }
+
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
 
-        CustomButton(text = "Log in", onClick = onLoginClick)
 
-        Spacer(modifier = Modifier.height(20.dp))
-
-        TextButton(onClick = { onRegisterClick() }) {
-            Text("Don’t have an account? Sign Up", style = MaterialTheme.typography.bodySmall)
-        }
 
     }
 }

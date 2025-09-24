@@ -34,7 +34,11 @@ fun Navigation() {
         }
 
         composable<RouteScreen.Register> {
-            RegisterScreen()
+            RegisterScreen(
+                onLoginClick = {
+                    navController.navigate(RouteScreen.Login)
+                }
+            )
         }
     }
 }
