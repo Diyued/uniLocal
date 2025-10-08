@@ -14,7 +14,8 @@ import com.example.unilocal.ui.viewmodel.PlacesViewModel
 fun PlaceDetail(
     id: String
 ){
-    val place = LocalMainViewModel.current.placesViewModel.findbyID(id)
+    val placesViewModel = LocalMainViewModel.current.placesViewModel
+    val place = placesViewModel.findbyID(id)
 
 
         Text(

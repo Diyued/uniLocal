@@ -49,6 +49,9 @@ fun ContentUser(
 
         composable<RouteTab.CreatePlace> {
             CreatePlaceScreen(
+                onNavigateBack = {
+                    navController.navigate(RouteTab.Map)
+                },
                 placesViewModel = placesViewModel
             )
         }

@@ -41,7 +41,10 @@ import com.example.unilocal.ui.screens.user.nav.ContentUser
 import com.example.unilocal.ui.screens.user.nav.RouteTab
 
 @Composable
-fun HomeUser() {
+fun HomeUser(
+    logout: () -> Unit
+) {
+
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val navController = rememberNavController()
@@ -62,6 +65,16 @@ fun HomeUser() {
                             .clickable() {
                                 scope.launch { drawerState.close() } // cerrar menú
                                 navController.navigate(RouteTab.EditProfileScreen)
+                            }
+                    )
+                    Text(
+                        text = "Cerrar Sesión",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .clickable() {
+                                scope.launch { drawerState.close() } // cerrar menú
+                                logout()
                             }
                     )
                 }
@@ -126,7 +139,9 @@ fun HomeUser() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBarUser(onMenuClick: () -> Unit) {
+fun TopBarUser(
+    onMenuClick: () -> Unit
+) {
     CenterAlignedTopAppBar(
         title = { Text(text = stringResource(R.string.home_title)) },
         navigationIcon = {
