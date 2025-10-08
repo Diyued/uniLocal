@@ -10,14 +10,16 @@ import androidx.compose.ui.unit.dp
 import com.example.unilocal.R
 import com.example.unilocal.ui.components.CustomButton
 import com.example.unilocal.ui.components.CustomTextField
+import com.example.unilocal.ui.nav.LocalMainViewModel
 import com.example.unilocal.ui.viewmodel.UsersViewModel
 
 @Composable
 fun LoginScreen(
-    userViewModel: UsersViewModel,
+    usersViewModel1: UsersViewModel,
     onNavigateHome: () -> Unit,
     onRegisterClick: () -> Unit
 ) {
+    val usersViewModel = LocalMainViewModel.current.usersViewModel
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var rememberMe by remember { mutableStateOf(false) }
@@ -112,7 +114,7 @@ fun LoginScreen(
             CustomButton(
                 text = stringResource(id = R.string.btn_login),
                 onClick = {
-                    val userLogged = userViewModel.login(email, password)
+                    val userLogged = usersViewModel.login(email, password)
                     var hasError = false
 
                     if (email.isBlank()) {

@@ -1,25 +1,32 @@
 package com.example.unilocal.ui.nav
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.unilocal.ui.screens.user.tabs.CreatePlaceScreen
-import com.example.unilocal.ui.screens.user.tabs.EditProfileScreen
 import com.example.unilocal.ui.screens.LoginScreen
 import com.example.unilocal.ui.screens.RegisterScreen
 import com.example.unilocal.ui.config.RouteScreen
 
 import com.example.unilocal.ui.screens.user.HomeUser
-import com.example.unilocal.ui.screens.user.nav.RouteTab
+import com.example.unilocal.ui.viewmodel.MainViewModel
 import com.example.unilocal.ui.viewmodel.UsersViewModel
 
+val LocalMainViewModel = androidx.compose.runtime.compositionLocalOf<MainViewModel> {error("MainViewModel not found")}
 @Composable
-fun Navigation() {
+fun Navigation(
+    mainViewModel: MainViewModel
+) {
     val navController = rememberNavController()
     val usersViewModel: UsersViewModel = viewModel()
+
+    CompositionLocalProvider(
+        LocalMainViewModel provides mainViewModel
+    ) {
+
 
     NavHost(
         navController = navController,
@@ -58,6 +65,6 @@ fun Navigation() {
         }
 
 
-
+    }
     }
 }

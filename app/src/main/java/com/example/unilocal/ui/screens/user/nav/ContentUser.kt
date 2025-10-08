@@ -70,7 +70,6 @@ fun ContentUser(
             val args = it.toRoute<RouteTab.PlaceDetail>()
             PlaceDetail(
                 placesViewModel = placesViewModel,
-                padding = padding,
                 id = args.id
             )
         }

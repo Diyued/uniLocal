@@ -21,7 +21,10 @@ import com.example.unilocal.ui.screens.user.nav.RouteTab
 
 @Composable
 fun BottomBarUser(
-    navController: NavHostController
+    navController: NavHostController,
+    showTapBar: (Boolean) -> Unit,
+    showFAB: (Boolean) -> Unit,
+    titleTopBar: (Int) -> Unit
 ) {
 
     val startDestination = Destination.HOME
@@ -39,6 +42,9 @@ fun BottomBarUser(
                 onClick = {
                     selectedDestination = index
                     navController.navigate(destination.route)
+                    titleTopBar(destination.label)
+                    showTapBar(destination.showTapBar)
+                    showFAB(destination.showFAB)
                 },
                 icon = {
                     Icon(
@@ -56,8 +62,10 @@ enum class Destination(
     val route: RouteTab,
     val label: Int,
     val icon: ImageVector,
+    val showFAB: Boolean = false,
+    val showTapBar: Boolean = true
 ){
-    HOME(RouteTab.Map, R.string.btn_home, Icons.Outlined.Home),
+    HOME(RouteTab.Map, R.string.btn_home, Icons.Outlined.Home, showFAB = true),
     FAVORITES(RouteTab.Favorites, R.string.btn_favorites, Icons.Outlined.FavoriteBorder),
     ADD_PLACE(RouteTab.CreatePlace, R.string.btn_add_place, Icons.Outlined.AddCircle),
     //TEMPORAL
