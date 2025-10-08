@@ -26,7 +26,6 @@ fun Navigation(
 ) {
     val context = LocalContext.current
     val navController = rememberNavController()
-    val usersViewModel: UsersViewModel = viewModel()
     val user = SharedPrefsUtil.getPreference(context)
 
     val startDestination = if(user.isEmpty()){
@@ -50,7 +49,7 @@ fun Navigation(
     ) {
         composable<RouteScreen.Login> {
             LoginScreen(
-                usersViewModel,
+                usersViewModel = mainViewModel.usersViewModel,
                 onNavigateHome = {userId, role ->
                     SharedPrefsUtil.savePreference(context, userId, role)
                     if(role == Role.ADMIN){
@@ -68,7 +67,7 @@ fun Navigation(
 
         composable<RouteScreen.Register> {
             RegisterScreen(
-                usersViewModel,
+                usersViewModel = mainViewModel.usersViewModel,
                 onLoginClick = {
 
                     navController.navigate(RouteScreen.Login)
@@ -78,6 +77,7 @@ fun Navigation(
 
         composable<RouteScreen.HomeUser> {
             HomeUser(
+                mainViewModel = mainViewModel,
                 logout = {
                     SharedPrefsUtil.clearPreference(context)
                     navController.navigate(RouteScreen.Login)
@@ -87,6 +87,7 @@ fun Navigation(
 
         composable<RouteScreen.HomeAdmin> {
             HomeAdmin(
+                mainViewModel = mainViewModel,
                 logout = {
                     SharedPrefsUtil.clearPreference(context)
                     navController.navigate(RouteScreen.Login)

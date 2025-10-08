@@ -24,10 +24,12 @@ import com.example.unilocal.R
 import com.example.unilocal.ui.screens.admin.bottombar.BottomBarAdmin
 import com.example.unilocal.ui.screens.admin.nav.ContentAdmin
 import com.example.unilocal.ui.screens.user.TopBarUser
+import com.example.unilocal.ui.viewmodel.MainViewModel
 
 
 @Composable
 fun HomeAdmin(
+    mainViewModel: MainViewModel,
     logout: () -> Unit
 ) {
     val navController = rememberNavController()
@@ -46,6 +48,7 @@ fun HomeAdmin(
                 }
             ) { padding ->
                 ContentAdmin(
+                    placesViewModel = mainViewModel.placesViewModel,
                     padding = padding,
                     navController = navController
                 )

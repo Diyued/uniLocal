@@ -20,7 +20,7 @@ sealed class RouteTab {
 
     //TEMPORAL
     @Serializable
-    data object TempPlaces : RouteTab()
+    data object Places : RouteTab()
 
     @Serializable
     data class PlaceDetail(val id: String): RouteTab()

@@ -15,12 +15,13 @@ import com.example.unilocal.utils.SharedPrefsUtil
 
 @Composable
 fun ContentAdmin(
+    placesViewModel: PlacesViewModel,
     padding: PaddingValues,
     navController: NavHostController
 ){
 
     val context = LocalContext.current
-    val placesViewModel: PlacesViewModel = viewModel()
+
 
     NavHost(
         navController = navController,

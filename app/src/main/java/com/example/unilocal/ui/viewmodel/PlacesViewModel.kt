@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class PlacesViewModel: ViewModel() {
     private val _places = MutableStateFlow(emptyList<Place>())
+    val places: StateFlow<List<Place>> = _places.asStateFlow()
 
     private val _approvedPlaces = MutableStateFlow<List<Place>>(emptyList())
     val approvedPlaces: StateFlow<List<Place>> = _approvedPlaces.asStateFlow()
@@ -28,7 +29,7 @@ class PlacesViewModel: ViewModel() {
     val reviewedPlaces: StateFlow<List<Place>> = _reviewedPlaces.asStateFlow()
 
 
-    val places: StateFlow<List<Place>> = _places.asStateFlow()
+
     init {
         loadPlaces()
     }
@@ -99,7 +100,7 @@ class PlacesViewModel: ViewModel() {
         _reviewedPlaces.value = _places.value.filter { it.status != PlaceStatus.PENDING}
     }
 
-    fun findbyID(id: String): Place? {
+    fun findByID(id: String): Place? {
         return _places.value.find { it.id == id }
     }
 

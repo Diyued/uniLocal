@@ -1,5 +1,6 @@
 package com.example.unilocal.ui.screens.admin.tabs
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -68,7 +69,10 @@ fun PendingPlacesScreen(
                                 Icon(Icons.Default.Close, contentDescription = "Rechazar", tint = MaterialTheme.colorScheme.error)
                             }
                             Spacer(modifier = Modifier.width(8.dp))
-                            IconButton(onClick = { placesViewModel.approvePlace(place.id) }) {
+                            IconButton(onClick = {
+                                placesViewModel.approvePlace(place.id)
+                                Log.d(placesViewModel.approvedPlaces.value.toString(), "PlacesViewModel")
+                            }) {
                                 Icon(Icons.Default.Check, contentDescription = "Aprobar", tint = MaterialTheme.colorScheme.primary)
                             }
                         }

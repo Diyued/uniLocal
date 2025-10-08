@@ -39,9 +39,11 @@ import kotlinx.coroutines.launch
 import com.example.unilocal.ui.screens.user.bottombar.BottomBarUser
 import com.example.unilocal.ui.screens.user.nav.ContentUser
 import com.example.unilocal.ui.screens.user.nav.RouteTab
+import com.example.unilocal.ui.viewmodel.MainViewModel
 
 @Composable
 fun HomeUser(
+    mainViewModel: MainViewModel,
     logout: () -> Unit
 ) {
 
@@ -130,7 +132,8 @@ fun HomeUser(
             ) {
                 ContentUser(
                     navController = navController,
-                    padding = PaddingValues(0.dp)
+                    padding = PaddingValues(0.dp),
+                    placesViewModel = mainViewModel.placesViewModel
                 )
             }
         }

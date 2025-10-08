@@ -1,5 +1,6 @@
 package com.example.unilocal.ui.screens.user.nav
 
+import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -20,10 +21,11 @@ import com.example.unilocal.ui.viewmodel.PlacesViewModel
 @Composable
 fun ContentUser(
     padding: PaddingValues,
-    navController: NavHostController
+    navController: NavHostController,
+    placesViewModel: PlacesViewModel
 ) {
 
-    val placesViewModel: PlacesViewModel = viewModel()
+
 
     NavHost(
         navController = navController,
@@ -64,10 +66,11 @@ fun ContentUser(
         }
 
         //TEMPORAL
-        composable<RouteTab.TempPlaces> {
+        composable<RouteTab.Places> {
 
-
+            Log.d(placesViewModel.approvedPlaces.value.toString(), "PlacesViewModel")
             Places(padding = padding,
+                placesViewModel = placesViewModel,
                 onNavigateToPlaceDetail ={
                     navController.navigate(RouteTab.PlaceDetail(it))
                 }

@@ -15,7 +15,7 @@ fun PlaceDetail(
     id: String
 ){
     val placesViewModel = LocalMainViewModel.current.placesViewModel
-    val place = placesViewModel.findbyID(id)
+    val place = placesViewModel.findByID(id)
 
 
         Text(
