@@ -87,7 +87,6 @@ fun CreatePlaceScreen(
                     schedule = schedule
                 )
                 placesViewModel.create(place)
-
             })
 
         }
