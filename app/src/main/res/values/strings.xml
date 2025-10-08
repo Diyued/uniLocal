@@ -22,4 +22,6 @@
     <string name="btn_home">Home</string>"
     <string name="btn_favorites">Favorites</string>
     <string name="btn_add_place">Add place</string>
+    //TEMPORAL
+    <string name="btn_places">Places</string>"
 </resources>

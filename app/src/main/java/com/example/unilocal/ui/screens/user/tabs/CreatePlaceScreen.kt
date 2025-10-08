@@ -1,4 +1,4 @@
-package com.example.unilocal.ui.screens
+package com.example.unilocal.ui.screens.user.tabs
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,9 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.unilocal.ui.components.CustomButton
 import com.example.unilocal.ui.components.CustomTextField
+import com.example.unilocal.ui.viewmodel.PlacesViewModel
 
 @Composable
 fun CreatePlaceScreen(){
+
 
     var placeName by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
@@ -63,4 +66,5 @@ fun CreatePlaceScreen(){
 
         }
     }
+
 }

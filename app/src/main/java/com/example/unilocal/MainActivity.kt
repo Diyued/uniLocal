@@ -3,9 +3,8 @@ package com.example.unilocal
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.example.unilocal.ui.screens.LoginScreen
 import com.example.unilocal.ui.theme.UniLocalTheme
-import com.example.unilocal.ui.screens.Navigation
+import com.example.unilocal.ui.nav.Navigation
 
 
 class MainActivity : ComponentActivity() {

@@ -8,11 +8,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.unilocal.R
+import com.example.unilocal.model.Role
+import com.example.unilocal.model.User
 import com.example.unilocal.ui.components.CustomButton
 import com.example.unilocal.ui.components.CustomTextField
+import com.example.unilocal.ui.viewmodel.UsersViewModel
 
 @Composable
 fun RegisterScreen(
+    usersViewModel: UsersViewModel,
     onLoginClick: () -> Unit
 ) {
     var name by remember { mutableStateOf("") }
@@ -137,6 +141,17 @@ fun RegisterScreen(
             CustomButton(
                 text = stringResource(id = R.string.btn_sign_up),
                 onClick = {
+                    val user = User(
+                        id = (usersViewModel.users.value.size + 1).toString(),
+                        name = name,
+                        username = username,
+                        email = email,
+                        role = Role.USER,
+                        city = city,
+                        password = password
+                    )
+                    usersViewModel.create(user)
+                    onLoginClick()
                     var hasError = false
 
                     if (name.isBlank()) {

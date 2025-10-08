@@ -1,4 +1,4 @@
-package com.example.unilocal.ui.screens
+package com.example.unilocal.ui.screens.user.tabs
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*

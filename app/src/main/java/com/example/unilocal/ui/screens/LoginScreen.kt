@@ -10,9 +10,11 @@ import androidx.compose.ui.unit.dp
 import com.example.unilocal.R
 import com.example.unilocal.ui.components.CustomButton
 import com.example.unilocal.ui.components.CustomTextField
+import com.example.unilocal.ui.viewmodel.UsersViewModel
 
 @Composable
 fun LoginScreen(
+    userViewModel: UsersViewModel,
     onNavigateHome: () -> Unit,
     onRegisterClick: () -> Unit
 ) {
@@ -110,6 +112,7 @@ fun LoginScreen(
             CustomButton(
                 text = stringResource(id = R.string.btn_login),
                 onClick = {
+                    val userLogged = userViewModel.login(email, password)
                     var hasError = false
 
                     if (email.isBlank()) {
@@ -129,7 +132,8 @@ fun LoginScreen(
                     }
 
                     if (!hasError) {
-                        if (email == "juan@gmail.com" && password == "123456") {
+                        if (userLogged != null)
+                        {
                             onNavigateHome()
                         } else {
                             passwordError = "Invalid email or password"
