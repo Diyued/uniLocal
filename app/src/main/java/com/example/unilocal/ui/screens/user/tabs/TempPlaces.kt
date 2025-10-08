@@ -21,31 +21,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.example.unilocal.ui.viewmodel.PlacesViewModel
 import coil.compose.AsyncImage
+import com.example.unilocal.ui.components.PlacesList
+import com.example.unilocal.ui.nav.LocalMainViewModel
 
 @Composable
 fun Places(
     padding: PaddingValues,
-    placesViewModel: PlacesViewModel,
     onNavigateToPlaceDetail: (String) -> Unit){
 
-    val places by placesViewModel.approvedPlaces.collectAsState()
-
-    LazyColumn(modifier = Modifier.padding(paddingValues = padding)) {
-        items(places){
-            ListItem(
-                modifier = Modifier.clip(MaterialTheme.shapes.small).clickable{
-                    onNavigateToPlaceDetail(it.id)
-                },
-                headlineContent = {
-                    Text(text = it.title)
-                },
-                supportingContent = {
-
-                    Text(text = it.description)
-                }
-            )
+    val placesViewModel = LocalMainViewModel.current.placesViewModel
+    val places by placesViewModel.places.collectAsState()
 
 
-        }
-    }
+    PlacesList(
+        places = places,
+        padding = padding,
+        onNavigateToPlaceDetail = onNavigateToPlaceDetail
+    )
 }

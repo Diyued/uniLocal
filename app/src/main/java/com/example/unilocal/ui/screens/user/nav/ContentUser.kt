@@ -30,7 +30,12 @@ fun ContentUser(
         startDestination = RouteTab.Map
     ){
         composable<RouteTab.Map> {
-            Map(padding)
+            Map(
+                padding = padding,
+                onNavigateToPlaceDetail ={
+                navController.navigate(RouteTab.PlaceDetail(it))
+            }
+            )
         }
         composable<RouteTab.Search> {
             Search(
@@ -60,7 +65,6 @@ fun ContentUser(
 
 
             Places(padding = padding,
-                placesViewModel = placesViewModel,
                 onNavigateToPlaceDetail ={
                     navController.navigate(RouteTab.PlaceDetail(it))
                 }
@@ -69,7 +73,6 @@ fun ContentUser(
         composable<RouteTab.PlaceDetail> {
             val args = it.toRoute<RouteTab.PlaceDetail>()
             PlaceDetail(
-                placesViewModel = placesViewModel,
                 id = args.id
             )
         }
