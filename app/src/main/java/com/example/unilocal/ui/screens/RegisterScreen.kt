@@ -12,13 +12,16 @@ import com.example.unilocal.model.Role
 import com.example.unilocal.model.User
 import com.example.unilocal.ui.components.CustomButton
 import com.example.unilocal.ui.components.CustomTextField
+import com.example.unilocal.ui.nav.LocalMainViewModel
 import com.example.unilocal.ui.viewmodel.UsersViewModel
 
 @Composable
 fun RegisterScreen(
-    usersViewModel: UsersViewModel,
+    usersViewModel1: UsersViewModel,
     onLoginClick: () -> Unit
 ) {
+    val usersViewModel = LocalMainViewModel.current.usersViewModel
+
     var name by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }

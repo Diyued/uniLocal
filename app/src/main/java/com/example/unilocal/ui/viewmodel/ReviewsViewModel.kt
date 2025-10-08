@@ -1,4 +1,6 @@
 package com.example.unilocal.ui.viewmodel
 
-class ReviewsViewModel {
+import androidx.lifecycle.ViewModel
+
+class ReviewsViewModel: ViewModel() {
 }
