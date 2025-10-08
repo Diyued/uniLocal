@@ -23,5 +23,7 @@
     <string name="btn_favorites">Favorites</string>
     <string name="btn_add_place">Add place</string>
     //TEMPORAL
-    <string name="btn_places">Places</string>"
+    <string name="btn_places">Places</string>
+    <string name="btn_pending_places">Pending Places</string>
+    <string name="btn_reviewed_places">Reviewed Places</string>"
 </resources>

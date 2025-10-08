@@ -13,6 +13,8 @@ navigationCompose = "2.7.2"
 navigationComposeVersion = "2.9.4"
 kotlinXSerializationJson = "1.9.0"
 coilCompose = "2.7.0"
+haze = "1.0.0"
+
 
 [libraries]
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
@@ -39,4 +41,5 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+christianbanes-haze = { id = "dev.chrisbanes.haze", version = "1.0.0" }
 

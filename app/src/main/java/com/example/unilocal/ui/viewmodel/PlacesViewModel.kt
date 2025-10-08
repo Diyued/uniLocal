@@ -1,7 +1,7 @@
 package com.example.unilocal.ui.viewmodel
 
 import androidx.activity.result.launch
-import androidx.compose.ui.test.filter
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.unilocal.model.Location
@@ -23,6 +23,11 @@ class PlacesViewModel: ViewModel() {
 
     private val _pendingPlaces = MutableStateFlow<List<Place>>(emptyList())
     val pendingPlaces: StateFlow<List<Place>> = _pendingPlaces.asStateFlow()
+
+    private val _reviewedPlaces = MutableStateFlow<List<Place>>(emptyList())
+    val reviewedPlaces: StateFlow<List<Place>> = _reviewedPlaces.asStateFlow()
+
+
     val places: StateFlow<List<Place>> = _places.asStateFlow()
     init {
         loadPlaces()
@@ -91,6 +96,7 @@ class PlacesViewModel: ViewModel() {
         _approvedPlaces.value = _places.value.filter { it.status == PlaceStatus.APPROVED }
         _pendingPlaces.value = _places.value.filter { it.status == PlaceStatus.PENDING }
         _rejectedPlaces.value = _places.value.filter { it.status == PlaceStatus.REJECTED }
+        _reviewedPlaces.value = _places.value.filter { it.status != PlaceStatus.PENDING}
     }
 
     fun findbyID(id: String): Place? {

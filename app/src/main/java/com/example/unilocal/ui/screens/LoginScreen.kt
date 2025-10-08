@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.unilocal.R
+import com.example.unilocal.model.Role
 import com.example.unilocal.ui.components.CustomButton
 import com.example.unilocal.ui.components.CustomTextField
 import com.example.unilocal.ui.nav.LocalMainViewModel
@@ -15,11 +16,12 @@ import com.example.unilocal.ui.viewmodel.UsersViewModel
 
 @Composable
 fun LoginScreen(
-    usersViewModel1: UsersViewModel,
-    onNavigateHome: () -> Unit,
+    usersViewModel: UsersViewModel,
+    onNavigateHomeUser: () -> Unit,
+    onNavigateHomeAdmin: () -> Unit,
     onRegisterClick: () -> Unit
 ) {
-    val usersViewModel = LocalMainViewModel.current.usersViewModel
+    //val usersViewModel = LocalMainViewModel.current.usersViewModel
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var rememberMe by remember { mutableStateOf(false) }
@@ -134,9 +136,11 @@ fun LoginScreen(
                     }
 
                     if (!hasError) {
-                        if (userLogged != null)
+                        if (userLogged != null && userLogged.role == Role.USER)
                         {
-                            onNavigateHome()
+                            onNavigateHomeUser()
+                        } else if (userLogged != null && userLogged.role == Role.ADMIN) {
+                            onNavigateHomeAdmin()
                         } else {
                             passwordError = "Invalid email or password"
                         }

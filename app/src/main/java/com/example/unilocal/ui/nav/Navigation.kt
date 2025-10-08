@@ -10,6 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.unilocal.ui.screens.LoginScreen
 import com.example.unilocal.ui.screens.RegisterScreen
 import com.example.unilocal.ui.config.RouteScreen
+import com.example.unilocal.ui.screens.admin.HomeAdmin
 
 import com.example.unilocal.ui.screens.user.HomeUser
 import com.example.unilocal.ui.viewmodel.MainViewModel
@@ -35,8 +36,12 @@ fun Navigation(
         composable<RouteScreen.Login> {
             LoginScreen(
                 usersViewModel,
-                onNavigateHome = {
-                    navController.navigate(RouteScreen.Home)
+                onNavigateHomeUser = {
+                    navController.navigate(RouteScreen.HomeUser)
+                },
+
+                onNavigateHomeAdmin = {
+                    navController.navigate(RouteScreen.HomeAdmin)
                 },
 
                 onRegisterClick = {
@@ -55,12 +60,18 @@ fun Navigation(
             )
         }
 
-        composable<RouteScreen.Home> {
+        composable<RouteScreen.HomeUser> {
             HomeUser(
 
                 //onNavigateCreatePlace = {
                 //    navController.navigate(RouteScreen.CreatePlace)
                 //}
+            )
+        }
+
+        composable<RouteScreen.HomeAdmin> {
+            HomeAdmin(
+
             )
         }
 
