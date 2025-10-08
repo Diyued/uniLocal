@@ -1,14 +1,17 @@
 package com.example.unilocal.ui.screens.user.tabs
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,7 +29,8 @@ import java.util.UUID
 
 @Composable
 fun CreatePlaceScreen(
-    placesViewModel: PlacesViewModel
+    placesViewModel: PlacesViewModel,
+    onNavigateBack: () -> Unit
 ){
 
     var id by remember { mutableStateOf("") }
@@ -40,8 +44,14 @@ fun CreatePlaceScreen(
     var type by remember { mutableStateOf("") }
     var pictures by remember { mutableStateOf("") }
     var images by remember { mutableStateOf("") }
+    var showExitDialog by remember { mutableStateOf(false) }
 
 
+    BackHandler(
+        !showExitDialog
+    ) {
+        showExitDialog = true
+    }
     Surface {
         Column(
             modifier = Modifier
@@ -91,5 +101,29 @@ fun CreatePlaceScreen(
 
         }
     }
+    if(showExitDialog){
+        AlertDialog(
+            title = {
+                "Esta seguro de salir?"
+            },
+            text = {
+                Text("Al salir perderas todos los cambios")
+                },
+            onDismissRequest = {
+                showExitDialog = false
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showExitDialog = false
+                        onNavigateBack()
 
+                }){
+                    Text("Confirmar")
+                }
+            },
+            dismissButton = {
+            }
+        )
+    }
 }

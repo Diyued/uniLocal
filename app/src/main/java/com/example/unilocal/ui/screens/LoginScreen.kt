@@ -1,10 +1,12 @@
 package com.example.unilocal.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.unilocal.R
@@ -17,14 +19,14 @@ import com.example.unilocal.ui.viewmodel.UsersViewModel
 @Composable
 fun LoginScreen(
     usersViewModel: UsersViewModel,
-    onNavigateHomeUser: () -> Unit,
-    onNavigateHomeAdmin: () -> Unit,
+    onNavigateHome: (String, Role) -> Unit,
     onRegisterClick: () -> Unit
 ) {
     //val usersViewModel = LocalMainViewModel.current.usersViewModel
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var rememberMe by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     // Estados de error
     var emailError by remember { mutableStateOf<String?>(null) }
@@ -136,13 +138,15 @@ fun LoginScreen(
                     }
 
                     if (!hasError) {
-                        if (userLogged != null && userLogged.role == Role.USER)
-                        {
-                            onNavigateHomeUser()
-                        } else if (userLogged != null && userLogged.role == Role.ADMIN) {
-                            onNavigateHomeAdmin()
+                        if (userLogged != null){
+                            onNavigateHome(userLogged.id, userLogged.role)
+                            Toast.makeText(context, "Bienvenido ${userLogged.name}", Toast.LENGTH_SHORT).show()
                         } else {
-                            passwordError = "Invalid email or password"
+                            Toast.makeText(
+                                context,
+                                "Credenciales incorrectas",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
                 }
