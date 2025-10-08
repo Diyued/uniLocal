@@ -42,15 +42,6 @@ fun Places(
                 supportingContent = {
 
                     Text(text = it.description)
-                },
-                trailingContent = {
-                    AsyncImage(
-                        modifier = Modifier.clip(RoundedCornerShape(16.dp))
-                            .width(100.dp)
-                            .height(100.dp),
-                        model = it.images[0],
-                        contentDescription = "Imagen del lugar"
-                    )
                 }
             )
 

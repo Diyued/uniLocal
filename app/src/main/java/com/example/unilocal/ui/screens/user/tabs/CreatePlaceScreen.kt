@@ -18,20 +18,29 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.unilocal.model.Place
 import com.example.unilocal.ui.components.CustomButton
 import com.example.unilocal.ui.components.CustomTextField
 import com.example.unilocal.ui.viewmodel.PlacesViewModel
+import java.util.UUID
 
 @Composable
-fun CreatePlaceScreen(){
+fun CreatePlaceScreen(
+    placesViewModel: PlacesViewModel
+){
 
-
-    var placeName by remember { mutableStateOf("") }
+    var id by remember { mutableStateOf("") }
+    var title by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
+    var location by remember { mutableStateOf("") }
     var schedule by remember { mutableStateOf("") }
     var city by remember { mutableStateOf("") }
-    var category by remember { mutableStateOf("") }
+    var phones by remember { mutableStateOf("") }
+    var type by remember { mutableStateOf("") }
     var pictures by remember { mutableStateOf("") }
+    var images by remember { mutableStateOf("") }
+
 
     Surface {
         Column(
@@ -44,7 +53,10 @@ fun CreatePlaceScreen(){
             Text("Add a new place", style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.height(20.dp))
 
-            CustomTextField(label = "Place name", value = placeName, onValueChange = { placeName = it })
+            CustomTextField(label = "Place name", value = title, onValueChange = { title = it })
+            Spacer(modifier = Modifier.height(12.dp))
+
+            CustomTextField(label = "Description", value = description, onValueChange = { description = it })
             Spacer(modifier = Modifier.height(12.dp))
 
             CustomTextField(label = "Address", value = address, onValueChange = { address = it })
@@ -56,13 +68,27 @@ fun CreatePlaceScreen(){
             CustomTextField(label = "City", value = city, onValueChange = { city = it })
             Spacer(modifier = Modifier.height(12.dp))
 
-            CustomTextField(label = "Category", value = category, onValueChange = { category = it })
+            CustomTextField(label = "Category", value = type, onValueChange = { type = it })
             Spacer(modifier = Modifier.height(12.dp))
 
             CustomTextField(label = "Pictures", value = pictures, onValueChange = { pictures = it })
             Spacer(modifier = Modifier.height(12.dp))
 
-            CustomButton(text = "Request", onClick = { /* TODO: Handle place creation */ })
+            CustomButton(text = "Request", onClick = {
+                val place = Place(
+                    id = UUID.randomUUID().toString(),
+                    title = title,
+                    description = description,
+                    address = address,
+                    location = location,
+                    images = images,
+                    phones = phones,
+                    type = type,
+                    schedule = schedule
+                )
+                placesViewModel.create(place)
+
+            })
 
         }
     }

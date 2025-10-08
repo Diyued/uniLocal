@@ -43,7 +43,9 @@ fun ContentUser(
         }
 
         composable<RouteTab.CreatePlace> {
-            CreatePlaceScreen()
+            CreatePlaceScreen(
+                placesViewModel = placesViewModel
+            )
         }
         composable<RouteTab.EditProfileScreen> {
             EditProfileScreen(

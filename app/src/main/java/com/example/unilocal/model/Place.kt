@@ -5,9 +5,9 @@ data class Place (
     val title: String,
     val description: String,
     val address: String,
-    val location: Location,
-    val images: List<String>,
-    val phones: List<String>,
-    val type: PlaceType,
-    val schedule: List<Schedule>
+    val location: String, //Location
+    val images: String, //List<String>
+    val phones: String, //List<String>
+    val type: String, //PlaceType
+    val schedule: String //List<Schedule>
 )
