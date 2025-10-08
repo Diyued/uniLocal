@@ -1,4 +1,4 @@
-package com.example.unilocal.ui.screens
+package com.example.unilocal.ui.config
 
 import kotlinx.serialization.Serializable
 
@@ -14,8 +14,6 @@ sealed class RouteScreen {
     @Serializable
     data object Register : RouteScreen()
 
-    @Serializable
-    data object CreatePlace : RouteScreen()
 
 
 }
