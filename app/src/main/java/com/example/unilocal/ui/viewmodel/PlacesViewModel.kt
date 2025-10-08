@@ -1,8 +1,12 @@
 package com.example.unilocal.ui.viewmodel
 
+import androidx.activity.result.launch
+import androidx.compose.ui.test.filter
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.unilocal.model.Location
 import com.example.unilocal.model.Place
+import com.example.unilocal.model.PlaceStatus
 import com.example.unilocal.model.PlaceType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -10,6 +14,15 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class PlacesViewModel: ViewModel() {
     private val _places = MutableStateFlow(emptyList<Place>())
+
+    private val _approvedPlaces = MutableStateFlow<List<Place>>(emptyList())
+    val approvedPlaces: StateFlow<List<Place>> = _approvedPlaces.asStateFlow()
+
+    private val _rejectedPlaces = MutableStateFlow<List<Place>>(emptyList())
+    val rejectedPlaces: StateFlow<List<Place>> = _rejectedPlaces.asStateFlow()
+
+    private val _pendingPlaces = MutableStateFlow<List<Place>>(emptyList())
+    val pendingPlaces: StateFlow<List<Place>> = _pendingPlaces.asStateFlow()
     val places: StateFlow<List<Place>> = _places.asStateFlow()
     init {
         loadPlaces()
@@ -39,22 +52,61 @@ class PlacesViewModel: ViewModel() {
                 schedule = "listOf()"
             )
         )
+
+        updateFilteredLists()
     }
     fun create(place: Place) {
         _places.value = _places.value + place
+        updateFilteredLists()
     }
+
+    fun approvePlace(placeId: String) {
+        val currentPlaces = _places.value
+        val placeToUpdate = currentPlaces.find { it.id == placeId }
+
+        if (placeToUpdate != null) {
+            val updatedPlace = placeToUpdate.copy(status = PlaceStatus.APPROVED)
+            _places.value = currentPlaces.map {
+                if (it.id == placeId) updatedPlace else it
+            }
+            updateFilteredLists()
+        }
+    }
+
+
+    fun rejectPlace(placeId: String) {
+        val currentPlaces = _places.value
+        val placeToUpdate = currentPlaces.find { it.id == placeId }
+
+        if (placeToUpdate != null) {
+            val updatedPlace = placeToUpdate.copy(status = PlaceStatus.REJECTED)
+            _places.value = currentPlaces.map {
+                if (it.id == placeId) updatedPlace else it
+            }
+            updateFilteredLists()
+        }
+    }
+
+    private fun updateFilteredLists() {
+        _approvedPlaces.value = _places.value.filter { it.status == PlaceStatus.APPROVED }
+        _pendingPlaces.value = _places.value.filter { it.status == PlaceStatus.PENDING }
+        _rejectedPlaces.value = _places.value.filter { it.status == PlaceStatus.REJECTED }
+    }
+
     fun findbyID(id: String): Place? {
         return _places.value.find { it.id == id }
     }
+
     /*fun findByType(type: PlaceType): List<Place> {
         return _places.value.filter { it.type == type }
     }
     */
 
     fun findyName(name: String): List<Place> {
-        return _places.value.filter { it.title.contains(name) }
-
+        return _approvedPlaces.value.filter { it.title.contains(name, ignoreCase = true) }
     }
+
+
 
 
 }

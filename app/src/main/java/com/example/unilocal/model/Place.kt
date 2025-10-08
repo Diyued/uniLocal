@@ -9,5 +9,6 @@ data class Place (
     val images: String, //List<String>
     val phones: String, //List<String>
     val type: String, //PlaceType
-    val schedule: String //List<Schedule>
+    val schedule: String, //List<Schedule>
+    val status: PlaceStatus = PlaceStatus.PENDING
 )
