@@ -26,4 +26,16 @@
     <string name="btn_places">Places</string>
     <string name="btn_pending_places">Pending Places</string>
     <string name="btn_reviewed_places">Reviewed Places</string>"
+
+
+
+    <string name="txt_open">Abierto</string>
+    <string name="txt_close">Cerrado</string>
+    <string name="txt_search">Buscar</string>
+    <string name="txt_no_results">No hay resultados</string>
+    <string name="detail_schedule">Horarios</string>
+    <string name="detail_details">Detalles</string>
+    <string name="detail_city">Ciudad</string>
+    <string name="detail_address">Dirección</string>
+    <string name="detail_phoneNumber">Teléfono</string>
 </resources>

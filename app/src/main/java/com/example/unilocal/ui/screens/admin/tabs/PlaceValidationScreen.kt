@@ -97,8 +97,8 @@ fun PlaceValidationScreen(
             // Descripción
             InfoRow(label = "Descripción", value = place!!.description)
             InfoRow(label = "Dirección", value = place!!.address)
-            InfoRow(label = "Teléfonos", value = place!!.phones)
-            InfoRow(label = "Categoría", value = place!!.type) // Asumiendo que type es un String o Enum
+            InfoRow(label = "Teléfonos", value = place!!.phoneNumber)
+            InfoRow(label = "Categoría", value = place!!.type.displayName) // Asumiendo que type es un String o Enum
 
             Spacer(modifier = Modifier.weight(1f))
 
