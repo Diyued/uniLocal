@@ -65,8 +65,18 @@ fun HomeUser(
                             .fillMaxWidth()
                             .padding(16.dp)
                             .clickable() {
-                                scope.launch { drawerState.close() } // cerrar menú
+                                scope.launch { drawerState.close() }
                                 navController.navigate(RouteTab.EditProfileScreen)
+                            }
+                    )
+                    Text(
+                        text = "Your Places",
+                                modifier = Modifier
+                                .fillMaxWidth()
+                            .padding(16.dp)
+                            .clickable() {
+                                scope.launch { drawerState.close() }
+                                navController.navigate(RouteTab.Places)
                             }
                     )
                     Text(
@@ -75,7 +85,7 @@ fun HomeUser(
                             .fillMaxWidth()
                             .padding(16.dp)
                             .clickable() {
-                                scope.launch { drawerState.close() } // cerrar menú
+                                scope.launch { drawerState.close() }
                                 logout()
                             }
                     )

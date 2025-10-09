@@ -16,10 +16,6 @@ sealed class RouteTab {
     data object CreatePlace : RouteTab()
 
     @Serializable
-    data object Search : RouteTab()
-
-    //TEMPORAL
-    @Serializable
     data object Places : RouteTab()
 
     @Serializable

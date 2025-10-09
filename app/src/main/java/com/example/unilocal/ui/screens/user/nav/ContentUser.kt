@@ -15,7 +15,6 @@ import com.example.unilocal.ui.screens.user.tabs.CreatePlaceScreen
 import com.example.unilocal.ui.screens.user.tabs.EditProfileScreen
 import com.example.unilocal.ui.screens.user.tabs.Map
 import com.example.unilocal.ui.screens.user.tabs.Places
-import com.example.unilocal.ui.screens.user.tabs.Search
 import com.example.unilocal.ui.screens.user.tabs.PlaceDetail
 import com.example.unilocal.ui.viewmodel.PlacesViewModel
 import com.example.unilocal.utils.SharedPrefsUtil
@@ -43,11 +42,7 @@ fun ContentUser(
             }
             )
         }
-        composable<RouteTab.Search> {
-            Search(
-                padding = padding
-            )
-        }
+
 
         composable<RouteTab.Favorites> {
             //FavoritesScreen()
