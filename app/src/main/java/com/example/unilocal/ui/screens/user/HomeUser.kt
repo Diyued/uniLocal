@@ -57,7 +57,7 @@ fun HomeUser(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            ModalDrawerSheet {
+            ModalDrawerSheet (modifier = Modifier.fillMaxWidth(0.7f)){
                 Column {
                     Text(
                         text = "Perfil",
