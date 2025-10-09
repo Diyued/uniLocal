@@ -69,5 +69,5 @@ enum class Destination(
     FAVORITES(RouteTab.Favorites, R.string.btn_favorites, Icons.Outlined.FavoriteBorder),
     ADD_PLACE(RouteTab.CreatePlace, R.string.btn_add_place, Icons.Outlined.AddCircle),
     //TEMPORAL
-    PLACES(RouteTab.TempPlaces, R.string.btn_places, Icons.Outlined.AddCircle)
+    PLACES(RouteTab.Places, R.string.btn_places, Icons.Outlined.AddCircle)
 }

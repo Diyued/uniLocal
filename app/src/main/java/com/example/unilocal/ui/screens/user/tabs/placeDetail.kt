@@ -12,9 +12,10 @@ import com.example.unilocal.ui.viewmodel.PlacesViewModel
 
 @Composable
 fun PlaceDetail(
-    id: String
+    id: String,
+    placesViewModel: PlacesViewModel
 ){
-    val placesViewModel = LocalMainViewModel.current.placesViewModel
+    val placesViewModel = placesViewModel
     val place = placesViewModel.findByID(id)
 
 

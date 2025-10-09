@@ -79,7 +79,8 @@ fun ContentUser(
         composable<RouteTab.PlaceDetail> {
             val args = it.toRoute<RouteTab.PlaceDetail>()
             PlaceDetail(
-                id = args.id
+                id = args.id,
+                placesViewModel = placesViewModel
             )
         }
     }
