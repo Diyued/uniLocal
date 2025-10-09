@@ -54,6 +54,15 @@ class UsersViewModel: ViewModel() {
     fun findByEmail(email: String): User? {
         return _users.value.find { it.email == email }
     }
+    fun update(user: User) {
+        val currentUsers = _users.value.toMutableList()
+        val index = currentUsers.indexOfFirst { it.id == user.id }
+
+        if (index != -1) {
+            currentUsers[index] = user
+            _users.value = currentUsers
+        }
+    }
     fun login (email: String, password: String): User? {
         return _users.value.find { it.email == email && it.password == password }
     }

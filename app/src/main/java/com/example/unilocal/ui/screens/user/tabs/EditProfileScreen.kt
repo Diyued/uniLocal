@@ -8,23 +8,36 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.unilocal.ui.components.CustomButton
 import com.example.unilocal.ui.components.CustomTextField
+import com.example.unilocal.ui.components.InputText
+import com.example.unilocal.ui.nav.LocalMainViewModel
 
 @Composable
 fun EditProfileScreen(
-    onConfirmClick: () -> Unit
+    onConfirmClick: () -> Unit,
+    userId: String?
 ) {
-    var fullName by remember { mutableStateOf("John Doe") }
-    var username by remember { mutableStateOf("johndoe123") }
-    var email by remember { mutableStateOf("johndoe@gmail.com") }
-    var city by remember { mutableStateOf("Los Angeles, CA") }
-    var password by remember { mutableStateOf("123456") }
+    val usersViewModel = LocalMainViewModel.current.usersViewModel
+    val user = usersViewModel.findbyID(userId?:"")
+
+    var fullName by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var city by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
+    LaunchedEffect(user) {
+        user?.let {
+            fullName = it.name
+            username = it.username
+            email = it.email
+            city = it.city
+        }
+    }
 
     // Estados de error
     var fullNameError by remember { mutableStateOf<String?>(null) }
     var usernameError by remember { mutableStateOf<String?>(null) }
-    var emailError by remember { mutableStateOf<String?>(null) }
     var cityError by remember { mutableStateOf<String?>(null) }
-    var passwordError by remember { mutableStateOf<String?>(null) }
 
     Surface {
         Column(
@@ -32,7 +45,7 @@ fun EditProfileScreen(
             verticalArrangement = Arrangement.Top,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp),
+                .padding(24.dp)
         ) {
             Text(
                 text = "Edit your info",
@@ -87,23 +100,16 @@ fun EditProfileScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Email
+            // Email (inhabilitado)
             Column(modifier = Modifier.fillMaxWidth()) {
-                CustomTextField(
+                InputText(
                     label = "Email",
                     value = email,
-                    onValueChange = {
-                        email = it
-                        emailError = null
-                    }
+                    onValueChange = { },
+                    supportingText = "",
+                    onValidate = { false },
+                    enabled = false
                 )
-                if (emailError != null) {
-                    Text(
-                        text = emailError!!,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -129,24 +135,19 @@ fun EditProfileScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Password
+            // Password (inhabilitado)
             Column(modifier = Modifier.fillMaxWidth()) {
-                CustomTextField(
+                InputText(
+
                     label = "Password",
                     value = password,
-                    onValueChange = {
-                        password = it
-                        passwordError = null
-                    },
-                    isPassword = true
+                    onValueChange = { },
+                    isPassword = true,
+                    supportingText = "",
+                    onValidate = { false },
+                    enabled = false
+
                 )
-                if (passwordError != null) {
-                    Text(
-                        text = passwordError!!,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
             }
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -169,15 +170,15 @@ fun EditProfileScreen(
                         cityError = "City is required"
                         hasError = true
                     }
-                    if (password.isBlank()) {
-                        passwordError = "Password is required"
-                        hasError = true
-                    } else if (password.length < 6) {
-                        passwordError = "Password must be at least 6 characters"
-                        hasError = true
-                    }
 
                     if (!hasError) {
+                        usersViewModel.update(
+                            user!!.copy(
+                                name = fullName,
+                                username = username,
+                                city = city
+                            )
+                        )
                         onConfirmClick()
                     }
                 }

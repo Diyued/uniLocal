@@ -31,10 +31,10 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -51,20 +51,23 @@ import com.example.unilocal.model.Schedule
 import com.example.unilocal.ui.nav.LocalMainViewModel
 import com.example.unilocal.R
 import com.example.unilocal.model.Review
-import com.example.unilocal.ui.components.InputText
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlaceDetail(
-    id: String
+    userId: String?,
+    placeId: String
 ){
     val placesViewModel = LocalMainViewModel.current.placesViewModel
     val reviewsViewModel = LocalMainViewModel.current.reviewsViewModel
 
-    val place = placesViewModel.findByID(id)
+    val place = placesViewModel.findByID(placeId)
     val images = place?.images ?: emptyList()
+    val reviews = remember{ mutableStateListOf<Review>() }
+    reviews.addAll(reviewsViewModel.getReviewsByPlace(placeId))
 
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showComments by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -140,8 +143,7 @@ fun PlaceDetail(
 
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
+                        .fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ){
@@ -149,8 +151,19 @@ fun PlaceDetail(
                     Text(
                         text = "Comentarios",
                     )
-                    //CommentList()
-                    CreateCommentForm()
+                    CommentList(
+                        reviews = reviews
+
+                    )
+                    CreateCommentForm(
+                        placeId = placeId,
+                        userId = userId,
+                        onCreateReview = {
+                            reviews.add(it)
+                            reviewsViewModel.create(it)
+
+                        }
+                    )
                 }
 
             }
@@ -191,14 +204,20 @@ fun CommentList(
 }
 
 @Composable
-fun CreateCommentForm(){
+fun CreateCommentForm(
+    placeId: String,
+    userId: String?,
+    onCreateReview: (Review) -> Unit
+){
+    var comment by remember { mutableStateOf("") }
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth()
+            .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ){
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
+            value = comment,
+            onValueChange = {comment = it},
             modifier = Modifier.weight(1f),
             placeholder = {
                 Text(
@@ -207,7 +226,23 @@ fun CreateCommentForm(){
             }
         )
         IconButton(
-            onClick = {}
+            onClick = {
+                val review = Review(
+                    id = UUID.randomUUID().toString(),
+                    userID = userId?: "",
+                    username = "Carlos",
+                    placeID = placeId,
+                    rating = 5,
+                    comment = comment,
+                    date = java.time.LocalDateTime.now()
+
+                )
+                if (comment.isEmpty()){
+                    return@IconButton
+                }
+                onCreateReview(review)
+                comment = ""
+            }
         ) {
             Icon(
                 imageVector = Icons.Default.Send,
