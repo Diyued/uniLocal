@@ -20,9 +20,10 @@ import com.example.unilocal.ui.viewmodel.UsersViewModel
 fun LoginScreen(
     usersViewModel: UsersViewModel,
     onNavigateHome: (String, Role) -> Unit,
-    onRegisterClick: () -> Unit
+    onRegisterClick: () -> Unit,
+    onNavigateToPasswordReset: () -> Unit
 ) {
-    //val usersViewModel = LocalMainViewModel.current.usersViewModel
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var rememberMe by remember { mutableStateOf(false) }
@@ -107,7 +108,9 @@ fun LoginScreen(
                     text = stringResource(id = R.string.checkbox_remember_me),
                     modifier = Modifier.weight(1f)
                 )
-                TextButton(onClick = { /* TODO: Forgot Password */ }) {
+                TextButton(onClick = {
+                    onNavigateToPasswordReset()
+                }) {
                     Text(stringResource(id = R.string.txt_forgot_password))
                 }
             }

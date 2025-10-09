@@ -8,10 +8,13 @@ import androidx.navigation.compose.NavHost
 
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.example.unilocal.model.Role
 import com.example.unilocal.ui.screens.LoginScreen
 import com.example.unilocal.ui.screens.RegisterScreen
 import com.example.unilocal.ui.config.RouteScreen
+import com.example.unilocal.ui.screens.PasswordResetCodeScreen
+import com.example.unilocal.ui.screens.PasswordResetScreen
 import com.example.unilocal.ui.screens.admin.HomeAdmin
 import com.example.unilocal.ui.screens.admin.tabs.PlaceValidationScreen
 
@@ -62,7 +65,11 @@ fun Navigation(
 
                 onRegisterClick = {
                     navController.navigate(RouteScreen.Register)
+                },
+                onNavigateToPasswordReset = {
+                    navController.navigate(RouteScreen.PasswordReset)
                 }
+
             )
         }
 
@@ -94,6 +101,29 @@ fun Navigation(
                     navController.navigate(RouteScreen.Login)
                 }
 
+            )
+        }
+
+        composable<RouteScreen.PasswordReset> {
+            PasswordResetScreen(
+                usersViewModel = mainViewModel.usersViewModel,
+                onNavigateResetCode = {userId ->
+                    navController.navigate(RouteScreen.PasswordResetCode(userId))
+
+                }
+            )
+        }
+
+        composable<RouteScreen.PasswordResetCode> { backStackEntry ->
+            val args: RouteScreen.PasswordResetCode = backStackEntry.toRoute()
+            val userId = args.userId
+
+            PasswordResetCodeScreen(
+                usersViewModel = mainViewModel.usersViewModel,
+                userId = userId,
+                onNavigateBack = {
+                    navController.navigate(RouteScreen.Login)
+                }
             )
         }
 
