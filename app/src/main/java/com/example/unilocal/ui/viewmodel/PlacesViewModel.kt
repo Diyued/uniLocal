@@ -4,13 +4,17 @@ import androidx.activity.result.launch
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.unilocal.model.City
 import com.example.unilocal.model.Location
 import com.example.unilocal.model.Place
 import com.example.unilocal.model.PlaceStatus
 import com.example.unilocal.model.PlaceType
+import com.example.unilocal.model.Schedule
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.time.DayOfWeek
+import java.time.LocalTime
 
 class PlacesViewModel: ViewModel() {
     private val _places = MutableStateFlow(emptyList<Place>())
@@ -40,22 +44,42 @@ class PlacesViewModel: ViewModel() {
                 title = "Restaurante El paisa",
                 description = "El mejor restaurante paisa",
                 address = "Cra 12 # 12 - 12",
-                location = "1.23, 2.34",
-                images = "listOf(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTM3Uv-2p7sm5kdLvUgjiDXwsdrtkYi7XTFfQ&s)",
-                phones = "3123132133, 3123132133",
-                type = "PlaceType.RESTAURANT",
-                schedule = "listOf()"
+                location = Location(1.23, 2.34),
+                images = listOf("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTM3Uv-2p7sm5kdLvUgjiDXwsdrtkYi7XTFfQ&s"),
+                phoneNumber = "3123132133, 3123132133",
+                type = PlaceType.RESTAURANT,
+                city = City.ARMENIA,
+                schedules = listOf(
+                    Schedule(DayOfWeek.MONDAY, LocalTime.of(10, 0), LocalTime.of(20, 0)),
+                    Schedule(DayOfWeek.THURSDAY, LocalTime.of(10, 0), LocalTime.of(20, 0) ),
+                    Schedule(DayOfWeek.FRIDAY, LocalTime.of(10, 0), LocalTime.of(20, 0)),),
+                ownerId = "2"
             ),
             Place(
                 id = "2",
                 title = "Bar test",
                 description = "Un bar test",
                 address = "Calle 12 # 12 - 12",
-                location = "1.23, 2.34",
-                images = "listOf(https://dynamic-media-cdn.tripadvisor.com/media/photo-o/19/aa/b9/fa/caption.jpg?w=900&h=500&s=1)",
-                phones = "3123132133 , 3123132133",
-                type = "PlaceType.BAR",
-                schedule = "listOf()"
+                location = Location(1.23, 2.34),
+                images = listOf("https://cdn0.uncomo.com/es/posts/6/8/4/como_gestionar_un_bar_22486_orig.jpg"),
+                phoneNumber = "3123123123",
+                type = PlaceType.BAR,
+                city = City.ARMENIA,
+                schedules = listOf(),
+                ownerId = "2"
+            ),
+            Place(
+                id = "3",
+                title = "Autoservicio Super A",
+                description = "Autoservicio Super Adiela",
+                address = "Manzana 29 Local 1 Etapa 3",
+                location = Location(1.23, 2.34),
+                images = listOf("https://rapiexpress.online/wp-content/uploads/2021/10/imagen-laureles-300x300.png"),
+                phoneNumber = "3123132133 , 3123132133",
+                type = PlaceType.SHOPPING,
+                city = City.ARMENIA,
+                schedules = listOf(),
+                ownerId = "3"
             )
         )
 

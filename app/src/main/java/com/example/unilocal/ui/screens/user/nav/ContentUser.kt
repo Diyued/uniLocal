@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -17,6 +18,7 @@ import com.example.unilocal.ui.screens.user.tabs.Places
 import com.example.unilocal.ui.screens.user.tabs.Search
 import com.example.unilocal.ui.screens.user.tabs.PlaceDetail
 import com.example.unilocal.ui.viewmodel.PlacesViewModel
+import com.example.unilocal.utils.SharedPrefsUtil
 
 @Composable
 fun ContentUser(
@@ -24,6 +26,8 @@ fun ContentUser(
     navController: NavHostController,
     placesViewModel: PlacesViewModel
 ) {
+    val context = LocalContext.current
+    val user = SharedPrefsUtil.getPreference(context)
 
 
 
@@ -51,6 +55,7 @@ fun ContentUser(
 
         composable<RouteTab.CreatePlace> {
             CreatePlaceScreen(
+                userId = user["userId"],
                 onNavigateBack = {
                     navController.navigate(RouteTab.Map)
                 },

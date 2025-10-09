@@ -34,6 +34,15 @@ class UsersViewModel: ViewModel() {
                 email = "carlos@email.com",
                 password = "123456"
             ),
+            User(
+                id ="3",
+                name = "Diego",
+                username = "Diego",
+                role = Role.USER,
+                city = "Armenia",
+                email = "diego@email.com",
+                password = "123456"
+            )
         )
     }
     fun create(user: User) {

@@ -15,20 +15,28 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.unilocal.model.City
+import com.example.unilocal.model.Location
 import com.example.unilocal.model.Place
+import com.example.unilocal.model.PlaceType
+import com.example.unilocal.model.Schedule
 import com.example.unilocal.ui.components.CustomButton
 import com.example.unilocal.ui.components.CustomTextField
 import com.example.unilocal.ui.viewmodel.PlacesViewModel
+import java.time.DayOfWeek
+import java.time.LocalTime
 import java.util.UUID
 
 @Composable
 fun CreatePlaceScreen(
+    userId: String?,
     placesViewModel: PlacesViewModel,
     onNavigateBack: () -> Unit
 ){
@@ -38,7 +46,9 @@ fun CreatePlaceScreen(
     var description by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
-    var schedule by remember { mutableStateOf("") }
+    val schedule = remember { mutableStateListOf(
+        Schedule(DayOfWeek.MONDAY, LocalTime.of(9, 0), LocalTime.of(18, 0))
+    ) }
     var city by remember { mutableStateOf("") }
     var phones by remember { mutableStateOf("") }
     var type by remember { mutableStateOf("") }
@@ -72,9 +82,6 @@ fun CreatePlaceScreen(
             CustomTextField(label = "Address", value = address, onValueChange = { address = it })
             Spacer(modifier = Modifier.height(12.dp))
 
-            CustomTextField(label = "Schedule", value = schedule, onValueChange = { schedule = it })
-            Spacer(modifier = Modifier.height(12.dp))
-
             CustomTextField(label = "City", value = city, onValueChange = { city = it })
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -89,12 +96,15 @@ fun CreatePlaceScreen(
                     id = UUID.randomUUID().toString(),
                     title = title,
                     description = description,
+                    city = city as City,
                     address = address,
-                    location = location,
-                    images = images,
-                    phones = phones,
-                    type = type,
-                    schedule = schedule
+                    location = Location(1.0,1.0),
+                    images = listOf(),
+                    phoneNumber = phones,
+                    type = type as PlaceType,
+                    schedules = schedule,
+                    ownerId = userId ?: ""
+
                 )
                 placesViewModel.create(place)
             })
