@@ -64,6 +64,7 @@ fun ContentUser(
         }
         composable<RouteTab.EditProfileScreen> {
             EditProfileScreen(
+                userId = user["userId"],
                 onConfirmClick = {
                     navController.navigate(RouteTab.Map)
                 }
@@ -84,7 +85,8 @@ fun ContentUser(
         composable<RouteTab.PlaceDetail> {
             val args = it.toRoute<RouteTab.PlaceDetail>()
             PlaceDetail(
-                id = args.id
+                userId = user["userId"],
+                placeId = args.id
             )
         }
     }
