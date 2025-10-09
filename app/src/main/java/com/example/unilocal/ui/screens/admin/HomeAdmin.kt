@@ -48,7 +48,7 @@ fun HomeAdmin(
                 }
             ) { padding ->
                 ContentAdmin(
-                    placesViewModel = mainViewModel.placesViewModel,
+                    mainViewModel = mainViewModel,
                     padding = padding,
                     navController = navController
                 )

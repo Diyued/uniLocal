@@ -30,12 +30,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.error
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.unilocal.ui.viewmodel.PlacesViewModel
+import androidx.compose.foundation.clickable
+import com.example.unilocal.ui.config.RouteScreen
+import com.example.unilocal.ui.screens.admin.nav.RouteTab
 
 @Composable
 fun PendingPlacesScreen(
     padding: PaddingValues,
     placesViewModel: PlacesViewModel,
+    navController: NavController
     // onNavigateToPlaceDetail: (String) -> Unit // Opcional, para ver detalles
 ) {
 
@@ -50,31 +55,25 @@ fun PendingPlacesScreen(
     } else {
         LazyColumn(
             modifier = Modifier.padding(paddingValues = padding),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(16.dp)
         ) {
             items(pendingPlaces, key = { it.id }) { place ->
-                Card(elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
+                Card(elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                     modifier = Modifier.clickable {
+                         navController.navigate(RouteTab.PlaceValidation(place.id))
+                    }) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(text = place.title, style = MaterialTheme.typography.titleMedium)
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(text = place.description, style = MaterialTheme.typography.bodyMedium)
                         Spacer(modifier = Modifier.height(16.dp))
-                        // Botones de acción para el admin
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.End,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            IconButton(onClick = { placesViewModel.rejectPlace(place.id) }) {
-                                Icon(Icons.Default.Close, contentDescription = "Rechazar", tint = MaterialTheme.colorScheme.error)
-                            }
-                            Spacer(modifier = Modifier.width(8.dp))
-                            IconButton(onClick = {
-                                placesViewModel.approvePlace(place.id)
-                                Log.d(placesViewModel.approvedPlaces.value.toString(), "PlacesViewModel")
-                            }) {
-                                Icon(Icons.Default.Check, contentDescription = "Aprobar", tint = MaterialTheme.colorScheme.primary)
-                            }
+
                         }
                     }
                 }

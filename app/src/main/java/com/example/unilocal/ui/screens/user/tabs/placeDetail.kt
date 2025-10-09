@@ -149,7 +149,7 @@ fun PlaceDetail(
                     Text(
                         text = "Comentarios",
                     )
-                    CommentList()
+                    //CommentList()
                     CreateCommentForm()
                 }
 

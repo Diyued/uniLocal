@@ -1,5 +1,6 @@
 package com.example.unilocal.ui.screens.user.tabs
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.unilocal.model.City
 import com.example.unilocal.model.Location
@@ -55,6 +57,8 @@ fun CreatePlaceScreen(
     var pictures by remember { mutableStateOf("") }
     var images by remember { mutableStateOf("") }
     var showExitDialog by remember { mutableStateOf(false) }
+    var context = LocalContext.current
+
 
 
     BackHandler(
@@ -107,6 +111,12 @@ fun CreatePlaceScreen(
 
                 )
                 placesViewModel.create(place)
+                Toast.makeText(
+                    context,
+                    "Place creation requested successfully",
+                    Toast.LENGTH_SHORT
+                ).show()
+                onNavigateBack()
             })
 
         }

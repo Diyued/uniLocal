@@ -13,6 +13,7 @@ import com.example.unilocal.ui.screens.LoginScreen
 import com.example.unilocal.ui.screens.RegisterScreen
 import com.example.unilocal.ui.config.RouteScreen
 import com.example.unilocal.ui.screens.admin.HomeAdmin
+import com.example.unilocal.ui.screens.admin.tabs.PlaceValidationScreen
 
 import com.example.unilocal.ui.screens.user.HomeUser
 import com.example.unilocal.ui.viewmodel.MainViewModel
@@ -95,6 +96,7 @@ fun Navigation(
 
             )
         }
+
 
 
     }
