@@ -38,4 +38,11 @@
     <string name="detail_city">Ciudad</string>
     <string name="detail_address">Dirección</string>
     <string name="detail_phoneNumber">Teléfono</string>
+    <string name="txt_reset_password_title">Reset your password</string>
+    <string name="txt_reset_password_subtitle">Type in your email address</string>
+    <string name="btn_find_account">Find account</string>
+    <string name="txt_reset_password_subtitle_1">Type in your new password</string>
+    <string name="txt_new_password">New Password</string>
+    <string name="btn_reset_password">Reset password</string>
+    <string name="txt_confirm_new_password">Confirm new password</string>
 </resources>

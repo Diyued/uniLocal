@@ -54,6 +54,17 @@ class UsersViewModel: ViewModel() {
     fun findByEmail(email: String): User? {
         return _users.value.find { it.email == email }
     }
+    fun login (email: String, password: String): User? {
+        return _users.value.find { it.email == email && it.password == password }
+    }
+
+    fun changePassword(id: String, newPassword: String) {
+        val user = findbyID(id)
+        if (user != null) {
+            user.password = newPassword
+        }
+    }
+
     fun getUserById(id: String): User? {
         return _users.value.find { it.id == id }
     }
