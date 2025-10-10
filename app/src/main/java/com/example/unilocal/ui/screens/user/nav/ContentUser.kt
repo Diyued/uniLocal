@@ -11,8 +11,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.example.unilocal.model.User
 import com.example.unilocal.ui.screens.user.tabs.CreatePlaceScreen
 import com.example.unilocal.ui.screens.user.tabs.EditProfileScreen
+import com.example.unilocal.ui.screens.user.tabs.FavoritePlacesScreen
 import com.example.unilocal.ui.screens.user.tabs.Map
 import com.example.unilocal.ui.screens.user.tabs.Places
 import com.example.unilocal.ui.screens.user.tabs.PlaceDetail
@@ -45,7 +47,14 @@ fun ContentUser(
 
 
         composable<RouteTab.Favorites> {
-            //FavoritesScreen()
+            FavoritePlacesScreen(
+                userId = user["userId"],
+                onViewClick = { placeId ->
+                    navController.navigate(RouteTab.PlaceDetail(placeId))
+                },
+                usersViewModel = viewModel(),
+                placesViewModel = placesViewModel
+            )
         }
 
         composable<RouteTab.CreatePlace> {
@@ -84,6 +93,7 @@ fun ContentUser(
                 placeId = args.id
             )
         }
+
     }
 
 }
