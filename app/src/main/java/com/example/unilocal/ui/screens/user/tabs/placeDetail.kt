@@ -61,6 +61,8 @@ import com.example.unilocal.ui.nav.LocalMainViewModel
 import com.example.unilocal.R
 import com.example.unilocal.model.Place
 import com.example.unilocal.model.Review
+import com.example.unilocal.ui.viewmodel.MainViewModel
+import com.example.unilocal.ui.viewmodel.PlacesViewModel
 import com.example.unilocal.ui.viewmodel.ReviewsViewModel
 import com.example.unilocal.ui.viewmodel.UsersViewModel
 import java.time.LocalDateTime
@@ -70,15 +72,15 @@ import java.util.UUID
 @Composable
 fun PlaceDetail(
     userId: String?,
-    placeId: String
+    placeId: String,
+    mainViewModel: MainViewModel
 ) {
-    val placesViewModel = LocalMainViewModel.current.placesViewModel
-    val reviewsViewModel = LocalMainViewModel.current.reviewsViewModel
 
-    val place = placesViewModel.findByID(placeId)
+
+    val place = mainViewModel.placesViewModel.findByID(placeId)
     val images = place?.images ?: emptyList()
     val reviews = remember { mutableStateListOf<Review>() }
-    reviews.addAll(reviewsViewModel.getReviewsByPlace(placeId))
+    reviews.addAll(mainViewModel.reviewsViewModel.getReviewsByPlace(placeId))
 
     var selectedTabIndex by remember { mutableStateOf(0) }
 
@@ -139,13 +141,13 @@ fun PlaceDetail(
                 }
             }
 
-            val usersViewModel: UsersViewModel = viewModel()
+            val usersViewModel = mainViewModel.usersViewModel
             val context = LocalContext.current
 
             // 📄 Contenido según tab
             when (selectedTabIndex) {
                 0 -> OverviewTab(place)
-                1 -> ReviewsTab(reviewsViewModel, placeId, userId)
+                1 -> ReviewsTab(mainViewModel.reviewsViewModel, placeId, userId)
                 2 -> MoreTab(
                     onNavigate = { key ->
                         when (key) {

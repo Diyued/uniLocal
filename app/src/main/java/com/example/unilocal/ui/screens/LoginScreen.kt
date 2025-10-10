@@ -1,5 +1,6 @@
 package com.example.unilocal.ui.screens
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -122,6 +123,9 @@ fun LoginScreen(
                 text = stringResource(id = R.string.btn_login),
                 onClick = {
                     val userLogged = usersViewModel.login(email, password)
+                    Log.d("LoginScreen", "User logged: $userLogged")
+
+
                     var hasError = false
 
                     if (email.isBlank()) {

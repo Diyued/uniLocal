@@ -1,18 +1,29 @@
 package com.example.unilocal.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.unilocal.model.Role
 import com.example.unilocal.model.User
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class UsersViewModel: ViewModel() {
     private val _users = MutableStateFlow(emptyList<User>())
     val users: StateFlow<List<User>> = _users.asStateFlow()
 
+    private val _currentUser = MutableStateFlow<User?>(null)
+    val currentUser: StateFlow<User?> = _currentUser.asStateFlow()
+
     init {
         loadUsers()
+        viewModelScope.launch {
+            currentUser.collect { user ->
+                Log.d("UsersViewModel", "currentUser cambió: $user")
+            }
+        }
     }
     fun loadUsers() {
         _users.value = listOf(
@@ -54,9 +65,7 @@ class UsersViewModel: ViewModel() {
     fun findByEmail(email: String): User? {
         return _users.value.find { it.email == email }
     }
-    fun login (email: String, password: String): User? {
-        return _users.value.find { it.email == email && it.password == password }
-    }
+
 
     fun changePassword(id: String, newPassword: String) {
         val user = findbyID(id)
@@ -79,8 +88,15 @@ class UsersViewModel: ViewModel() {
         }
     }
     fun login (email: String, password: String): User? {
-        return _users.value.find { it.email == email && it.password == password }
+        val user = _users.value.find { it.email == email && it.password == password }
+        _currentUser.value = user
+        return user
     }
+
+    fun logout() {
+        _currentUser.value = null
+    }
+
     fun addFavoritePlace(userId: String, placeId: String) {
         val currentUsers = _users.value
         val userToUpdate = currentUsers.find { it.id == userId }
@@ -90,18 +106,21 @@ class UsersViewModel: ViewModel() {
         println("🔍 Favoritos actuales: ${userToUpdate?.favoritePlaces}")
 
         if (userToUpdate != null) {
-            val updatedFavorites = (userToUpdate.favoritePlaces ?: emptyList()).toMutableList()
-            if (!updatedFavorites.contains(placeId)) {
-                updatedFavorites.add(placeId)
-            }
-
+            val updatedFavorites = (userToUpdate.favoritePlaces ?: emptyList()) + placeId
             val updatedUser = userToUpdate.copy(favoritePlaces = updatedFavorites)
-
-            println("🔍 Favoritos después: ${updatedUser.favoritePlaces}")
 
             _users.value = currentUsers.map {
                 if (it.id == userId) updatedUser else it
             }
+
+            if (_currentUser.value?.id == userId) {
+                _currentUser.value = updatedUser
+            }
+
+
+            println("🔍 Favoritos después: ${updatedUser.favoritePlaces}")
+
+
 
             println("✅ Usuario actualizado en StateFlow")
         } else {
@@ -114,16 +133,19 @@ class UsersViewModel: ViewModel() {
         val userToUpdate = currentUsers.find { it.id == userId }
 
         if (userToUpdate != null) {
-            val updatedFavorites = (userToUpdate.favoritePlaces ?: emptyList()).toMutableList()
-            updatedFavorites.remove(placeId)
-
+            val updatedFavorites = (userToUpdate.favoritePlaces ?: emptyList()).filter { it != placeId }
             val updatedUser = userToUpdate.copy(favoritePlaces = updatedFavorites)
 
-            // 👈 Actualizamos la lista completa de forma inmutable
             _users.value = currentUsers.map {
                 if (it.id == userId) updatedUser else it
             }
+
+            if (_currentUser.value?.id == userId) {
+                _currentUser.value = updatedUser
+            }
         }
+
+
     }
 
 }

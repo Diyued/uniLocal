@@ -25,15 +25,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
 import com.example.unilocal.ui.components.PlacesList
 import com.example.unilocal.ui.nav.LocalMainViewModel
+import com.example.unilocal.ui.viewmodel.MainViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Map(
     padding: PaddingValues,
-    onNavigateToPlaceDetail: (String) -> Unit
+    onNavigateToPlaceDetail: (String) -> Unit,
+    mainViewModel: MainViewModel
 ){
-    val placesViewModel = LocalMainViewModel.current.placesViewModel
+    val placesViewModel = mainViewModel.placesViewModel
     var query by rememberSaveable { mutableStateOf("") }
     var expanded by rememberSaveable { mutableStateOf(false) }
 

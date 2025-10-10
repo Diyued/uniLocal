@@ -143,7 +143,7 @@ fun HomeUser(
                 ContentUser(
                     navController = navController,
                     padding = PaddingValues(0.dp),
-                    placesViewModel = mainViewModel.placesViewModel
+                    mainViewModel = mainViewModel
                 )
             }
         }
