@@ -7,5 +7,6 @@ data class User (
     val role: Role,
     val email: String,
     val city: String,
-    var password: String
+    val password: String,
+    val favoritePlaces: List<String> = emptyList()
 )

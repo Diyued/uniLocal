@@ -78,4 +78,52 @@ class UsersViewModel: ViewModel() {
             _users.value = currentUsers
         }
     }
+    fun login (email: String, password: String): User? {
+        return _users.value.find { it.email == email && it.password == password }
+    }
+    fun addFavoritePlace(userId: String, placeId: String) {
+        val currentUsers = _users.value
+        val userToUpdate = currentUsers.find { it.id == userId }
+
+        println("🔍 addFavoritePlace - userId: $userId, placeId: $placeId")
+        println("🔍 Usuario encontrado: ${userToUpdate?.email}")
+        println("🔍 Favoritos actuales: ${userToUpdate?.favoritePlaces}")
+
+        if (userToUpdate != null) {
+            val updatedFavorites = (userToUpdate.favoritePlaces ?: emptyList()).toMutableList()
+            if (!updatedFavorites.contains(placeId)) {
+                updatedFavorites.add(placeId)
+            }
+
+            val updatedUser = userToUpdate.copy(favoritePlaces = updatedFavorites)
+
+            println("🔍 Favoritos después: ${updatedUser.favoritePlaces}")
+
+            _users.value = currentUsers.map {
+                if (it.id == userId) updatedUser else it
+            }
+
+            println("✅ Usuario actualizado en StateFlow")
+        } else {
+            println("❌ Usuario NO encontrado con ID: $userId")
+        }
+    }
+
+    fun removeFavoritePlace(userId: String, placeId: String) {
+        val currentUsers = _users.value  // 👈 Guardamos la lista actual
+        val userToUpdate = currentUsers.find { it.id == userId }
+
+        if (userToUpdate != null) {
+            val updatedFavorites = (userToUpdate.favoritePlaces ?: emptyList()).toMutableList()
+            updatedFavorites.remove(placeId)
+
+            val updatedUser = userToUpdate.copy(favoritePlaces = updatedFavorites)
+
+            // 👈 Actualizamos la lista completa de forma inmutable
+            _users.value = currentUsers.map {
+                if (it.id == userId) updatedUser else it
+            }
+        }
+    }
+
 }

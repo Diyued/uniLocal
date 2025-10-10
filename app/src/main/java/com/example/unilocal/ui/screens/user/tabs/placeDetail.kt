@@ -1,5 +1,6 @@
 package com.example.unilocal.ui.screens.user.tabs
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,10 +49,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.unilocal.model.Schedule
 import com.example.unilocal.ui.nav.LocalMainViewModel
@@ -59,6 +62,7 @@ import com.example.unilocal.R
 import com.example.unilocal.model.Place
 import com.example.unilocal.model.Review
 import com.example.unilocal.ui.viewmodel.ReviewsViewModel
+import com.example.unilocal.ui.viewmodel.UsersViewModel
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -135,6 +139,9 @@ fun PlaceDetail(
                 }
             }
 
+            val usersViewModel: UsersViewModel = viewModel()
+            val context = LocalContext.current
+
             // 📄 Contenido según tab
             when (selectedTabIndex) {
                 0 -> OverviewTab(place)
@@ -142,6 +149,17 @@ fun PlaceDetail(
                 2 -> MoreTab(
                     onNavigate = { key ->
                         when (key) {
+                            "save_place" -> {
+                                println("🎯 Guardando lugar - userId: $userId, placeId: $placeId")
+
+                                usersViewModel.addFavoritePlace(
+                                    userId = userId ?: "",
+                                    placeId = placeId
+                                )
+
+                                Toast.makeText(context, "Place saved to favorites", Toast.LENGTH_SHORT).show()
+                            }
+
                             "leave_review" -> {
                                 selectedTabIndex = 1
                             }

@@ -68,4 +68,5 @@ enum class Destination(
     HOME(RouteTab.Map, R.string.btn_home, Icons.Outlined.Home, showFAB = true),
     FAVORITES(RouteTab.Favorites, R.string.btn_favorites, Icons.Outlined.FavoriteBorder),
     ADD_PLACE(RouteTab.CreatePlace, R.string.btn_add_place, Icons.Outlined.AddCircle)
+
 }
