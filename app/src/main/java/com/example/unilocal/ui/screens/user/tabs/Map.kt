@@ -25,6 +25,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
 import com.example.unilocal.ui.components.PlacesList
 import com.example.unilocal.ui.nav.LocalMainViewModel
+import com.mapbox.geojson.Point
+import com.mapbox.maps.extension.compose.MapboxMap
+import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,6 +40,16 @@ fun Map(
     var query by rememberSaveable { mutableStateOf("") }
     var expanded by rememberSaveable { mutableStateOf(false) }
 
+    MapboxMap(
+        Modifier.fillMaxSize(),
+        mapViewportState = rememberMapViewportState {
+            setCameraOptions {
+                zoom(9.0)
+                center(Point.fromLngLat(-75.6491181, 4.4687891))
+                pitch(45.0)
+            }
+        },
+    )
     Column (
         modifier = Modifier
             .fillMaxSize(),

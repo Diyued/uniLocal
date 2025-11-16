@@ -141,6 +141,9 @@ fun HomeUser(
                     .padding(padding)
             ) {
                 ContentUser(
+                    setShowFAB = {
+                        showFAB = it
+                    },
                     navController = navController,
                     padding = PaddingValues(0.dp),
                     placesViewModel = mainViewModel.placesViewModel

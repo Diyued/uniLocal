@@ -14,6 +14,7 @@ navigationComposeVersion = "2.9.4"
 kotlinXSerializationJson = "1.9.0"
 coilCompose = "2.7.0"
 haze = "1.0.0"
+mapsCompose= "11.11.0"
 
 
 [libraries]
@@ -36,6 +37,9 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationComposeVersion" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinXSerializationJson" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coilCompose" }
+maps-android = {module = "com.mapbox.maps:android", version.ref="mapsCompose"}
+maps-compose = {module = "com.mapbox.extension:maps-compose", version.ref="mapsCompose"}
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
