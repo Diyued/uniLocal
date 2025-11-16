@@ -139,7 +139,4 @@ class PlacesViewModel: ViewModel() {
         return _approvedPlaces.value.filter { it.title.contains(name, ignoreCase = true) }
     }
 
-
-
-
 }

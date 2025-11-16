@@ -27,7 +27,8 @@ import com.example.unilocal.utils.SharedPrefsUtil
 fun ContentUser(
     padding: PaddingValues,
     navController: NavHostController,
-    mainViewModel: MainViewModel
+    mainViewModel: MainViewModel,
+    setShowFAB: (Boolean) -> Unit
 ) {
     val context = LocalContext.current
     val user = SharedPrefsUtil.getPreference(context)
@@ -46,8 +47,7 @@ fun ContentUser(
                 padding = padding,
                 onNavigateToPlaceDetail ={
                 navController.navigate(RouteTab.PlaceDetail(it))
-            },
-                mainViewModel = mainViewModel
+            }
             )
         }
 
@@ -92,6 +92,7 @@ fun ContentUser(
             )
         }
         composable<RouteTab.PlaceDetail> {
+            setShowFAB(false)
             val args = it.toRoute<RouteTab.PlaceDetail>()
             PlaceDetail(
                 userId = user["userId"],

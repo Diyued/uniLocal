@@ -55,6 +55,9 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.coil.compose)
     implementation("dev.chrisbanes.haze:haze:1.0.0")
+    implementation(libs.maps.android)
+    implementation(libs.maps.compose)
+
 
 
 
