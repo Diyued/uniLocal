@@ -1,5 +1,6 @@
 package com.example.unilocal.ui.screens
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -20,9 +21,10 @@ import com.example.unilocal.ui.viewmodel.UsersViewModel
 fun LoginScreen(
     usersViewModel: UsersViewModel,
     onNavigateHome: (String, Role) -> Unit,
-    onRegisterClick: () -> Unit
+    onRegisterClick: () -> Unit,
+    onNavigateToPasswordReset: () -> Unit
 ) {
-    //val usersViewModel = LocalMainViewModel.current.usersViewModel
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var rememberMe by remember { mutableStateOf(false) }
@@ -107,7 +109,9 @@ fun LoginScreen(
                     text = stringResource(id = R.string.checkbox_remember_me),
                     modifier = Modifier.weight(1f)
                 )
-                TextButton(onClick = { /* TODO: Forgot Password */ }) {
+                TextButton(onClick = {
+                    onNavigateToPasswordReset()
+                }) {
                     Text(stringResource(id = R.string.txt_forgot_password))
                 }
             }
@@ -119,6 +123,9 @@ fun LoginScreen(
                 text = stringResource(id = R.string.btn_login),
                 onClick = {
                     val userLogged = usersViewModel.login(email, password)
+                    Log.d("LoginScreen", "User logged: $userLogged")
+
+
                     var hasError = false
 
                     if (email.isBlank()) {

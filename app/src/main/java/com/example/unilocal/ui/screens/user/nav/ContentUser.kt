@@ -18,18 +18,23 @@ import com.example.unilocal.ui.screens.user.tabs.FavoritePlacesScreen
 import com.example.unilocal.ui.screens.user.tabs.Map
 import com.example.unilocal.ui.screens.user.tabs.Places
 import com.example.unilocal.ui.screens.user.tabs.PlaceDetail
+import com.example.unilocal.ui.viewmodel.MainViewModel
 import com.example.unilocal.ui.viewmodel.PlacesViewModel
+import com.example.unilocal.ui.viewmodel.ReviewsViewModel
 import com.example.unilocal.utils.SharedPrefsUtil
 
 @Composable
 fun ContentUser(
     padding: PaddingValues,
     navController: NavHostController,
-    placesViewModel: PlacesViewModel,
+    mainViewModel: MainViewModel,
     setShowFAB: (Boolean) -> Unit
 ) {
     val context = LocalContext.current
     val user = SharedPrefsUtil.getPreference(context)
+    val placesViewModel = mainViewModel.placesViewModel
+    val reviewsViewModel = mainViewModel.reviewsViewModel
+
 
 
 
@@ -49,12 +54,11 @@ fun ContentUser(
 
         composable<RouteTab.Favorites> {
             FavoritePlacesScreen(
-                userId = user["userId"],
+                padding = padding,
                 onViewClick = { placeId ->
                     navController.navigate(RouteTab.PlaceDetail(placeId))
                 },
-                usersViewModel = viewModel(),
-                placesViewModel = placesViewModel
+                mainViewModel = mainViewModel
             )
         }
 
@@ -81,7 +85,7 @@ fun ContentUser(
 
             Log.d(placesViewModel.approvedPlaces.value.toString(), "PlacesViewModel")
             Places(padding = padding,
-                placesViewModel = placesViewModel,
+                mainViewModel = mainViewModel,
                 onNavigateToPlaceDetail ={
                     navController.navigate(RouteTab.PlaceDetail(it))
                 }
@@ -92,7 +96,9 @@ fun ContentUser(
             val args = it.toRoute<RouteTab.PlaceDetail>()
             PlaceDetail(
                 userId = user["userId"],
-                placeId = args.id
+                placeId = args.id,
+                mainViewModel = mainViewModel
+
             )
         }
 

@@ -6,14 +6,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.example.unilocal.ui.components.PlacesList
 import com.example.unilocal.ui.nav.LocalMainViewModel
+import com.example.unilocal.ui.viewmodel.MainViewModel
 import com.example.unilocal.ui.viewmodel.PlacesViewModel
 
 @Composable
 fun Places(
     padding: PaddingValues,
-    placesViewModel: PlacesViewModel,
+    mainViewModel: MainViewModel,
     onNavigateToPlaceDetail: (String) -> Unit){
-    val places by placesViewModel.approvedPlaces.collectAsState()
+    val places by mainViewModel.placesViewModel.approvedPlaces.collectAsState()
 
 
     PlacesList(

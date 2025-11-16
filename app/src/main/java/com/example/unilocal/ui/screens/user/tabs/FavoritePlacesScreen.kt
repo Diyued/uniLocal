@@ -1,7 +1,9 @@
 package com.example.unilocal.ui.screens.user.tabs
 
+import android.R.attr.padding
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -11,44 +13,37 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.isEmpty
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.unilocal.model.Place
+import com.example.unilocal.ui.components.PlacesList
+import com.example.unilocal.ui.viewmodel.MainViewModel
 import com.example.unilocal.ui.viewmodel.PlacesViewModel
 import com.example.unilocal.ui.viewmodel.UsersViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoritePlacesScreen(
-    userId: String?,
-    usersViewModel: UsersViewModel = viewModel(),
-    placesViewModel: PlacesViewModel,
+    padding: PaddingValues,
+    mainViewModel: MainViewModel,
     onViewClick: (String) -> Unit
 ) {
-    // 🔄 Observamos directamente el StateFlow de usuarios
-    val users by usersViewModel.users.collectAsState()
-    val currentUser = remember(users, userId) {
-        println("🔍 FavoritePlacesScreen - Buscando userId: '$userId'")
-        println("🔍 Usuarios disponibles: ${users.map { "ID: '${it.id}', email: ${it.email}" }}")
-        val user = users.find { it.id == userId }
-        println("🔍 Usuario encontrado: ${user?.email}, favoritos: ${user?.favoritePlaces}")
-        user
+
+
+    val currentUser by mainViewModel.usersViewModel.currentUser.collectAsState()
+    val allPlaces by mainViewModel.placesViewModel.places.collectAsState()
+    val user = mainViewModel.usersViewModel.getUserById(currentUser?.id ?: "")
+
+
+    val favoritePlaces = remember(currentUser, allPlaces) {
+        currentUser?.favoritePlaces?.mapNotNull { placeId ->
+            allPlaces.find { it.id == placeId}
+        } ?: emptyList()
     }
 
-    // 🔄 Calculamos la lista de lugares favoritos cada vez que cambie el usuario
-    val favoritePlacesList = remember(currentUser?.favoritePlaces) {
-        val favoriteIds = currentUser?.favoritePlaces ?: emptyList()
-        println("🔍 FavoritePlacesScreen - IDs favoritos: $favoriteIds")
 
-        val places = favoriteIds.mapNotNull { placeId ->
-            val place = placesViewModel.findByID(placeId)
-            println("🔍 Buscando lugar ID: $placeId -> ${if (place != null) "ENCONTRADO: ${place.title}" else "NO ENCONTRADO"}")
-            place
-        }
-        println("🔍 Total lugares encontrados: ${places.size}")
-        places
-    }
 
     var selectedPlaceId by remember { mutableStateOf<String?>(null) }
 
@@ -69,26 +64,26 @@ fun FavoritePlacesScreen(
             ) {
                 Text("User not found")
             }
-            return@Scaffold
-        }
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp)
-        ) {
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp)
+            ) {
 
-            Text(
-                text = "Saved Places",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
+                Text(
+                    text = "Saved Places",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
 
-            Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-            // 📜 Lista de lugares favoritos
-            if (favoritePlacesList.isEmpty()) {
+                // 📜 Lista de lugares favoritos
+
+            if (favoritePlaces.isEmpty()) {
                 Box(
                     modifier = Modifier
                         .weight(1f)
@@ -109,7 +104,7 @@ fun FavoritePlacesScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(
-                        items = favoritePlacesList,
+                        items = favoritePlaces,
                         key = { place -> place.id }  // 🔑 Key para optimizar recomposición
                     ) { place ->
                         Card(
@@ -155,9 +150,11 @@ fun FavoritePlacesScreen(
                                     }
                                 }
 
+
+
                                 IconButton(
                                     onClick = {
-                                        usersViewModel.removeFavoritePlace(currentUser.id, place.id)
+                                        mainViewModel.usersViewModel.removeFavoritePlace(currentUser!!.id, place.id)
                                         if (selectedPlaceId == place.id) {
                                             selectedPlaceId = null
                                         }
@@ -172,22 +169,33 @@ fun FavoritePlacesScreen(
                             }
                         }
                     }
+
+
                 }
             }
 
-            // 🎯 Botón para ver lugar
-            Button(
-                onClick = { selectedPlaceId?.let { onViewClick(it) } },
-                enabled = selectedPlaceId != null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
-            ) {
-                Text("View Place")
+                Button(
+                    onClick = { selectedPlaceId?.let { onViewClick(it) } },
+                    enabled = selectedPlaceId != null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Text("View Place")
+                }
+
+                // 🎯 Botón para ver lugar
+
             }
+
+//
+
+
         }
+
+
     }
 }

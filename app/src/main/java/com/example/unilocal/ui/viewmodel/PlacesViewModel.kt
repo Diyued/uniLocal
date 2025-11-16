@@ -79,7 +79,9 @@ class PlacesViewModel: ViewModel() {
                 type = PlaceType.SHOPPING,
                 city = City.ARMENIA,
                 schedules = listOf(),
-                ownerId = "3"
+                ownerId = "3",
+                status = PlaceStatus.APPROVED
+
             )
         )
 
