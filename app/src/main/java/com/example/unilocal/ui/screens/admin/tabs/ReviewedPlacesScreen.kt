@@ -22,28 +22,19 @@ fun ReviewedPlacesScreen(
     placesViewModel: PlacesViewModel
 ){
 
-    val places by placesViewModel.reviewedPlaces.collectAsState()
+    val reviewedPlaces by placesViewModel.allReviewedPlaces.collectAsState()
 
     LazyColumn(modifier = Modifier.padding(paddingValues = padding)) {
-        items(places){
+        items(reviewedPlaces) { place ->
             ListItem(
-                modifier = Modifier.clip(MaterialTheme.shapes.small).clickable{
-                    //onNavigateToPlaceDetail(it.id)
-                },
-                headlineContent = {
-                    Text(text = it.title)
-                },
-                supportingContent = {
-                    Text(text = it.description)
-                },
-                trailingContent = {
-                    Text(text = it.status.toString())
-                }
-
+                modifier = Modifier
+                    .clip(MaterialTheme.shapes.small)
+                    .clickable { /* onNavigateToPlaceDetail(place.id) */ },
+                headlineContent = { Text(place.title) },
+                supportingContent = { Text(place.description) },
+                trailingContent = { Text(place.status.toString()) }
             )
-
-
         }
     }
-
 }
+

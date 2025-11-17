@@ -81,7 +81,7 @@ fun MapScreen(
             onExpandedChange = { expanded = it },
         ){
             if (query.isNotEmpty()) {
-                val places = placesViewModel.findyName(query)
+                val places = placesViewModel.findByName(query)
 
                 LazyColumn {
                     items(places){
@@ -102,7 +102,7 @@ fun MapScreen(
 
         }
         if (query.isNotEmpty()){
-            val places = placesViewModel.findyName(query)
+            val places = placesViewModel.findByName(query)
             PlacesList(
                 places = places,
                 padding = PaddingValues(72.dp),

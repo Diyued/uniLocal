@@ -1,68 +1,59 @@
 package com.example.unilocal.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.unilocal.model.Review
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import java.time.LocalDateTime
+import kotlinx.coroutines.launch
 
-class ReviewsViewModel: ViewModel() {
+class ReviewsViewModel : ViewModel() {
 
-    private val _reviews = MutableStateFlow(emptyList<Review>())
+    private val db = FirebaseFirestore.getInstance()
+
+    private val _reviews = MutableStateFlow<List<Review>>(emptyList())
     val reviews: StateFlow<List<Review>> = _reviews.asStateFlow()
+
 
     init {
         loadReviews()
     }
 
-    fun getReviewsByPlace(placeID: String): List<Review>{
+    // Obtener reseñas filtradas por placeID
+    fun getReviewsByPlace(placeID: String): List<Review> {
         return _reviews.value.filter { it.placeID == placeID }
     }
 
-    fun create(review: Review){
-        _reviews.value = _reviews.value + review
+    // Crear nueva reseña en Firebase
+    fun create(review: Review) {
+        val docRef = db.collection("reviews").document()
+
+        val reviewToSave = review.copy(
+            id = docRef.id,
+            date = java.time.LocalDateTime.now().toString()
+        )
+
+        docRef.set(reviewToSave)
+            .addOnSuccessListener {
+                _reviews.value = _reviews.value + reviewToSave
+            }
+            .addOnFailureListener { e ->
+                e.printStackTrace()
+            }
     }
 
-    fun loadReviews(){
-
-        _reviews.value = listOf(
-            Review(
-                id = "1",
-                userID = "3",
-                username = "Pepito",
-                placeID = "1",
-                rating = 5,
-                comment = "Buen lugar",
-                date = LocalDateTime.now()
-            ),
-            Review(
-                id = "2",
-                userID = "2",
-                username = "Carlos",
-                placeID = "1",
-                rating = 4,
-                comment = "Más o menos",
-                date = LocalDateTime.now()
-            ),
-            Review(
-                id = "3",
-                userID = "2",
-                username = "Carlos",
-                placeID = "2",
-                rating = 5,
-                comment = "Buen lugar",
-                date = LocalDateTime.now()
-            ),
-            Review(
-                id = "4",
-                userID = "2",
-                username = "Carlos",
-                placeID = "3",
-                rating = 5,
-                comment = "Buen lugar",
-                date = LocalDateTime.now()
-            )
-        )
+    // Cargar todas las reseñas desde Firebase
+    fun loadReviews() {
+        db.collection("reviews")
+            .get()
+            .addOnSuccessListener { result ->
+                val list = result.documents.mapNotNull { it.toObject(Review::class.java) }
+                _reviews.value = list
+            }
+            .addOnFailureListener { e ->
+                e.printStackTrace()
+            }
     }
 }

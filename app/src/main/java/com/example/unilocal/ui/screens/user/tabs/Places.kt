@@ -15,7 +15,7 @@ fun Places(
     padding: PaddingValues,
     onNavigateToPlaceDetail: (String) -> Unit){
     val placesViewModel = LocalMainViewModel.current.placesViewModel
-    placesViewModel.getMyPlaces(userId)
+    placesViewModel.loadMyPlaces(userId)
     val myPlaces by placesViewModel.myPlaces.collectAsState()
 
 
