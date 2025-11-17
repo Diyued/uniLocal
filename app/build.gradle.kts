@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.google.gms.google.services)
 
 }
 
@@ -57,6 +58,7 @@ dependencies {
     implementation("dev.chrisbanes.haze:haze:1.0.0")
     implementation(libs.maps.android)
     implementation(libs.maps.compose)
+    implementation(libs.firebase.firestore)
 
 
 

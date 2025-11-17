@@ -3,12 +3,17 @@ package com.example.unilocal.ui.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.unilocal.model.City
 import com.example.unilocal.model.Role
 import com.example.unilocal.model.User
+import com.example.unilocal.utils.RequestResult
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class UsersViewModel: ViewModel() {
     private val _users = MutableStateFlow(emptyList<User>())
@@ -17,6 +22,10 @@ class UsersViewModel: ViewModel() {
     private val _currentUser = MutableStateFlow<User?>(null)
     val currentUser: StateFlow<User?> = _currentUser.asStateFlow()
 
+
+    private val _userResult = MutableStateFlow<RequestResult?>(null)
+    val userResult: StateFlow<RequestResult?> = _userResult.asStateFlow()
+    val db = Firebase.firestore
     init {
         loadUsers()
         viewModelScope.launch {
@@ -25,57 +34,68 @@ class UsersViewModel: ViewModel() {
             }
         }
     }
-    fun loadUsers() {
-        _users.value = listOf(
-            User(
-                id ="1",
-                name = "Admin",
-                username = "admin",
-                role = Role.ADMIN,
-                city = "Armenia",
-                email = "admin@email.com",
-                password = "123456"
-            ),
-            User(
-                id ="2",
-                name = "Carlos",
-                username = "carlos",
-                role = Role.USER,
-                city = "Armenia",
-                email = "carlos@email.com",
-                password = "123456"
-            ),
-            User(
-                id ="3",
-                name = "Diego",
-                username = "Diego",
-                role = Role.USER,
-                city = "Armenia",
-                email = "diego@email.com",
-                password = "123456"
-            )
-        )
-    }
     fun create(user: User) {
-        _users.value = _users.value + user
+        viewModelScope.launch {
+            _userResult.value = RequestResult.Loading
+            _userResult.value = runCatching { createFirebase(user) }
+                .fold(
+                    onSuccess = {
+                        RequestResult.Success("Usuario creado Correctamente"
+                        )
+                    },
+                    onFailure = {
+                        RequestResult.Failure(it.message ?: "Error creando usuario"
+                        )
+                    }
+                )
+        }
     }
-    fun findbyID(id: String): User? {
-        return _users.value.find { it.id == id }
+
+    private suspend fun createFirebase(user: User) { //funcion async
+        db.collection("users")
+            .add(user)
+            .await()
+    }
+    fun findbyID(id: String){
+        viewModelScope.launch {
+            _userResult.value = RequestResult.Loading
+            _userResult.value = runCatching { findByIdFirebase(id) }
+                .fold(
+                    onSuccess = {
+                        RequestResult.Success("Usuario Encontrado Correctamente"
+                        )
+                    },
+                    onFailure = {
+                        RequestResult.Failure(it.message ?: "Error obteniendo usuario"
+                        )
+                    }
+                )
+        }
+    }
+    private suspend fun findByIdFirebase(id: String) {
+        val snapshot = db.collection( "users")
+            .document( id)
+            .get()
+            .await()
+
+        val user = snapshot.toObject(User::class.java)?.apply {
+            this.id = snapshot.id
+        }
+
+        _currentUser.value = user
     }
     fun findByEmail(email: String): User? {
         return _users.value.find { it.email == email }
     }
 
-
+    fun getUserById(id: String): User? {
+        return _users.value.find { it.id == id }
+    }
     fun changePassword(id: String, newPassword: String) {
-        val user = findbyID(id)
+        val user = getUserById(id)
         if (user != null) {
             user.password = newPassword
         }
-    }
-
-    fun getUserById(id: String): User? {
-        return _users.value.find { it.id == id }
     }
 
     fun update(user: User) {
@@ -87,11 +107,58 @@ class UsersViewModel: ViewModel() {
             _users.value = currentUsers
         }
     }
-    fun login (email: String, password: String): User? {
-        val user = _users.value.find { it.email == email && it.password == password }
-        _currentUser.value = user
-        return user
+    fun resetOperationResult(){
+        _userResult.value = null
     }
+
+    fun loadUsers() {
+        User(
+            id ="1",
+            name = "Admin",
+            username = "admin",
+            role = Role.ADMIN,
+            city = City.ARMENIA,
+            email = "admin@email.com",
+            password = "123456"
+        )
+    }
+    fun login (email: String, password: String){
+        viewModelScope.launch {
+            _userResult.value = RequestResult.Loading
+            _userResult.value = runCatching { loginFirebase(email, password) }
+                .fold(
+                    onSuccess = {
+                        RequestResult.Success("Login Correcto"
+                        )
+                    },
+                    onFailure = {
+                        RequestResult.Failure(it.message ?: "Error en el login"
+                        )
+                    }
+                )
+        }
+    }
+
+    private suspend fun loginFirebase(email: String, password: String) {
+        val snapshot = db.collection( "users")
+            .whereEqualTo("email",  email)
+            .whereEqualTo("password", password)
+            .get()
+            .await()
+
+        if (snapshot.isEmpty) {
+            throw Exception("Usuario no encontrado")
+        }else {
+
+            snapshot.documents.mapNotNull {
+                var user = it.toObject(User::class.java)?.apply {
+                    this.id = it.id
+                }
+                _currentUser.value = user
+            }
+        }
+    }
+
 
     fun logout() {
         _currentUser.value = null
