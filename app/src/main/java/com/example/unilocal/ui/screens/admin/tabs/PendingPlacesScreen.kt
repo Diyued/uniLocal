@@ -35,46 +35,41 @@ import com.example.unilocal.ui.viewmodel.PlacesViewModel
 import androidx.compose.foundation.clickable
 import com.example.unilocal.ui.config.RouteScreen
 import com.example.unilocal.ui.screens.admin.nav.RouteTab
-
 @Composable
 fun PendingPlacesScreen(
     padding: PaddingValues,
     placesViewModel: PlacesViewModel,
     navController: NavController
-    // onNavigateToPlaceDetail: (String) -> Unit // Opcional, para ver detalles
 ) {
 
     val pendingPlaces by placesViewModel.pendingPlaces.collectAsState()
 
     if (pendingPlaces.isEmpty()) {
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(padding), contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding),
+            contentAlignment = Alignment.Center
+        ) {
             Text("No hay lugares pendientes por revisar.")
         }
     } else {
         LazyColumn(
-            modifier = Modifier.padding(paddingValues = padding),
+            modifier = Modifier.padding(padding),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(16.dp)
         ) {
             items(pendingPlaces, key = { it.id }) { place ->
-                Card(elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                     modifier = Modifier.clickable {
-                         navController.navigate(RouteTab.PlaceValidation(place.id))
-                    }) {
+                Card(
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    modifier = Modifier.clickable {
+                        navController.navigate(RouteTab.PlaceValidation(place.id))
+                    }
+                ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text(text = place.title, style = MaterialTheme.typography.titleMedium)
+                        Text(place.title, style = MaterialTheme.typography.titleMedium)
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text(text = place.description, style = MaterialTheme.typography.bodyMedium)
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-
-                        }
+                        Text(place.description, style = MaterialTheme.typography.bodyMedium)
                     }
                 }
             }

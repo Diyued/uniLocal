@@ -42,21 +42,19 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.unilocal.model.Place
 import com.example.unilocal.ui.viewmodel.PlacesViewModel
-
 @Composable
 fun PlaceValidationScreen(
     padding: PaddingValues,
     placesViewModel: PlacesViewModel,
     placeId: String,
     onNavigateBack: () -> Unit
-){
+) {
 
     var place by remember { mutableStateOf<Place?>(null) }
     val context = LocalContext.current
 
-
     LaunchedEffect(placeId) {
-        place = placesViewModel.findByID(placeId)
+        place = placesViewModel.findById(placeId)
     }
 
     if (place == null) {
@@ -70,86 +68,77 @@ fun PlaceValidationScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .padding(16.dp)
-                .verticalScroll(rememberScrollState()) // Para que sea scrollable si el contenido es largo
+                .verticalScroll(rememberScrollState())
         ) {
 
             Text(
-                text = place!!.title,
+                place!!.title,
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
             )
-            Spacer(modifier = Modifier.height(8.dp))
 
+            Spacer(modifier = Modifier.height(12.dp))
 
             AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(place!!.images) // Asumiendo que `images` es una URL String
-                    .crossfade(true)
-                    .build(),
+                model = place!!.images.firstOrNull(),
                 contentDescription = "Imagen de ${place!!.title}",
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp),
                 contentScale = ContentScale.Crop
             )
+
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Descripción
-            InfoRow(label = "Descripción", value = place!!.description)
-            InfoRow(label = "Dirección", value = place!!.address)
-            InfoRow(label = "Teléfonos", value = place!!.phoneNumber)
-            InfoRow(label = "Categoría", value = place!!.type.displayName) // Asumiendo que type es un String o Enum
+            InfoRow("Descripción", place!!.description)
+            InfoRow("Dirección", place!!.address)
+            InfoRow("Teléfonos", place!!.phoneNumber)
+            InfoRow("Categoría", place!!.type.displayName)
+            InfoRow("Estado", place!!.status.name)
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(32.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                // Botón Rechazar
+
                 Button(
                     onClick = {
                         placesViewModel.rejectPlace(placeId)
                         onNavigateBack()
                         Toast.makeText(context, "Lugar rechazado", Toast.LENGTH_SHORT).show()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
                 ) {
-                    Icon(Icons.Default.Close, contentDescription = "Rechazar")
+                    Icon(Icons.Default.Close, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Rechazar")
                 }
 
-                // Botón Aprobar
                 Button(
                     onClick = {
                         placesViewModel.approvePlace(placeId)
                         onNavigateBack()
                         Toast.makeText(context, "Lugar aprobado", Toast.LENGTH_SHORT).show()
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    }
                 ) {
-                    Icon(Icons.Default.Check, contentDescription = "Aprobar")
+                    Icon(Icons.Default.Check, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Aprobar")
                 }
             }
         }
     }
-
 }
 
 @Composable
 private fun InfoRow(label: String, value: String) {
-    Column(modifier = Modifier.padding(vertical = 4.dp)) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.primary
-        )
-        Text(text = value, style = MaterialTheme.typography.bodyLarge)
-        HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
+    Column(modifier = Modifier.padding(vertical = 6.dp)) {
+        Text(label, fontWeight = FontWeight.SemiBold)
+        Text(value)
+        Divider()
     }
 }

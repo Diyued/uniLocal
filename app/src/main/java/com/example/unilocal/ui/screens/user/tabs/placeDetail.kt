@@ -77,7 +77,7 @@ fun PlaceDetail(
 ) {
 
 
-    val place = mainViewModel.placesViewModel.findByID(placeId)
+    val place = mainViewModel.placesViewModel.findById(placeId)
     val images = place?.images ?: emptyList()
     val reviews = remember { mutableStateListOf<Review>() }
     reviews.addAll(mainViewModel.reviewsViewModel.getReviewsByPlace(placeId))
@@ -199,9 +199,7 @@ fun ReviewsTab(
     placeId: String,
     userId: String?
 ) {
-    val reviews = remember { mutableStateListOf<Review>() }
-    reviews.clear()
-    reviews.addAll(reviewsViewModel.getReviewsByPlace(placeId))
+    val reviews = reviewsViewModel.getReviewsByPlace(placeId)
 
     Box(modifier = Modifier.fillMaxSize()) {
 
@@ -238,7 +236,6 @@ fun ReviewsTab(
             placeId = placeId,
             userId = userId,
             onCreateReview = {
-                reviews.add(it)
                 reviewsViewModel.create(it)
             },
             modifier = Modifier
@@ -347,15 +344,16 @@ fun CreateCommentForm(
                         placeID = placeId,
                         rating = 5,
                         comment = comment,
-                        date = LocalDateTime.now()
+                        date = LocalDateTime.now().toString()
                     )
-                    onCreateReview(review)
+                    onCreateReview(review)   // ← aquí el viewModel lo agrega
                     comment = ""
                 }
             }
         ) {
             Icon(Icons.Default.Send, contentDescription = null)
         }
+
     }
 }
 
