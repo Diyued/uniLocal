@@ -18,6 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.core.content.ContextCompat
 import com.example.unilocal.R
 import com.example.unilocal.model.Place
+import com.example.unilocal.model.PlaceStatus
 import com.mapbox.geojson.Point
 import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMap
@@ -33,8 +34,10 @@ import com.mapbox.maps.plugin.viewport.data.DefaultViewportTransitionOptions
 fun Map(
     modifier: Modifier = Modifier,
     places: List<Place> = emptyList(),
+    currentUserId: String? = null,
     activateClick: Boolean = false,
-    onMapClickListener: (Point) -> Unit = {}
+    onMapClickListener: (Point) -> Unit = {},
+    onMarkerClick: (String) -> Unit = {}
 ){
     val context = LocalContext.current
     var clickedPoint by rememberSaveable { mutableStateOf<Point?>(null) }
@@ -48,9 +51,13 @@ fun Map(
         ).show()
     }
 
-    val marker = rememberIconImage(
-        key = R.drawable.red_marker,
+    val redMarker = rememberIconImage(
+        key = "red-marker",
         painter = painterResource( R.drawable.red_marker)
+    )
+    val purpleMarker = rememberIconImage(
+        key = "purple-marker", // Key única
+        painter = painterResource( R.drawable.purple_marker) // Asegúrate de tener este drawable
     )
     val mapViewportState = rememberMapViewportState {
         setCameraOptions {
@@ -87,16 +94,29 @@ fun Map(
         }
         clickedPoint?.let{
             PointAnnotation(point = it){
-                iconImage=marker
+                iconImage=redMarker
             }
         }
 
-        if(places.isNotEmpty()){
-            places.forEach { place ->
+        // Filtramos los lugares que no estén rechazados
+        val placesToShow = places.filter { it.status != PlaceStatus.REJECTED }
+
+        if(placesToShow.isNotEmpty()){
+            placesToShow.forEach { place ->
                 PointAnnotation(
                     point = Point.fromLngLat(place.location.longitude, place.location.latitude),
+                    onClick = {
+                        onMarkerClick(place.id)
+                        true
+                    }
                 ) {
-                    iconImage = marker
+                    val isOwner = place.ownerId == currentUserId && currentUserId != null
+                    iconImage = if (isOwner) purpleMarker else redMarker
+
+                    // Ajustamos el tamaño del icono. 1.0 es el tamaño original.
+                    if (isOwner) {
+                        iconSize = 0.2// <- El icono morado será un 50% más grande
+                    }
                 }
             }
         }

@@ -16,7 +16,7 @@ fun Places(
     onNavigateToPlaceDetail: (String) -> Unit){
     val placesViewModel = LocalMainViewModel.current.placesViewModel
     placesViewModel.loadMyPlaces(userId)
-    val myPlaces by placesViewModel.myPlaces.collectAsState()
+    val myPlaces by placesViewModel.myApprovedPlaces.collectAsState()
 
 
     PlacesList(
