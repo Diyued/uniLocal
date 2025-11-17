@@ -99,7 +99,8 @@ fun Map(
         }
 
         // Filtramos los lugares que no estén rechazados
-        val placesToShow = places.filter { it.status != PlaceStatus.REJECTED }
+        val placesToShow = places.filter { it.status == PlaceStatus.APPROVED }
+
 
         if(placesToShow.isNotEmpty()){
             placesToShow.forEach { place ->
@@ -110,12 +111,11 @@ fun Map(
                         true
                     }
                 ) {
-                    val isOwner = place.ownerId == currentUserId && currentUserId != null
+                    val isOwner = place.ownerId == currentUserId
                     iconImage = if (isOwner) purpleMarker else redMarker
 
-                    // Ajustamos el tamaño del icono. 1.0 es el tamaño original.
                     if (isOwner) {
-                        iconSize = 0.2// <- El icono morado será un 50% más grande
+                        iconSize = 0.2//
                     }
                 }
             }

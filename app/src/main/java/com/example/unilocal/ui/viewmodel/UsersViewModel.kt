@@ -10,6 +10,7 @@ import com.example.unilocal.utils.RequestResult
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,11 +33,8 @@ class UsersViewModel: ViewModel() {
     val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     init {
-        loadUsers()
-        viewModelScope.launch {
-            currentUser.collect { user ->
-                Log.d("UsersViewModel", "currentUser cambió: $user")
-            }
+        auth.currentUser?.uid?.let {
+            findById(it)
         }
     }
     fun create(user: User) {
@@ -68,7 +66,7 @@ class UsersViewModel: ViewModel() {
             .await()
 
     }
-    fun findbyID(id: String){
+    fun findById(id: String){
         viewModelScope.launch {
             _userResult.value = RequestResult.Loading
             _userResult.value = runCatching { findByIdFirebase(id) }
@@ -123,17 +121,7 @@ class UsersViewModel: ViewModel() {
         _userResult.value = null
     }
 
-    fun loadUsers() {
-        User(
-            id ="1",
-            name = "Admin",
-            username = "admin",
-            role = Role.ADMIN,
-            city = City.ARMENIA,
-            email = "admin@email.com",
-            password = "123456"
-        )
-    }
+
     fun login (email: String, password: String){
         viewModelScope.launch {
             _userResult.value = RequestResult.Loading
@@ -177,55 +165,44 @@ class UsersViewModel: ViewModel() {
         }
     }
 
+
     fun addFavoritePlace(userId: String, placeId: String) {
-        val currentUsers = _users.value
-        val userToUpdate = currentUsers.find { it.id == userId }
+        viewModelScope.launch {
+            _userResult.value = RequestResult.Loading
+            try {
+                val userDocRef = db.collection("users").document(userId)
+                // Añade de forma atómica el ID del lugar al array 'favoritePlaces'.
+                // arrayUnion se asegura de que el ID se añada solo si no está ya presente.
+                userDocRef.update("favoritePlaces", FieldValue.arrayUnion(placeId)).await()
 
-        println("🔍 addFavoritePlace - userId: $userId, placeId: $placeId")
-        println("🔍 Usuario encontrado: ${userToUpdate?.email}")
-        println("🔍 Favoritos actuales: ${userToUpdate?.favoritePlaces}")
+                // Refresca el estado local del usuario desde Firestore para reflejar el cambio al instante
+                findByIdFirebase(userId)
 
-        if (userToUpdate != null) {
-            val updatedFavorites = (userToUpdate.favoritePlaces ?: emptyList()) + placeId
-            val updatedUser = userToUpdate.copy(favoritePlaces = updatedFavorites)
-
-            _users.value = currentUsers.map {
-                if (it.id == userId) updatedUser else it
+                _userResult.value = RequestResult.Success("Lugar guardado en favoritos")
+            } catch (e: Exception) {
+                Log.e("UsersViewModel", "Error adding favorite place", e)
+                _userResult.value = RequestResult.Failure(e.message ?: "Error al guardar en favoritos")
             }
-
-            if (_currentUser.value?.id == userId) {
-                _currentUser.value = updatedUser
-            }
-
-
-            println("🔍 Favoritos después: ${updatedUser.favoritePlaces}")
-
-
-
-            println("✅ Usuario actualizado en StateFlow")
-        } else {
-            println("❌ Usuario NO encontrado con ID: $userId")
         }
     }
 
     fun removeFavoritePlace(userId: String, placeId: String) {
-        val currentUsers = _users.value  // 👈 Guardamos la lista actual
-        val userToUpdate = currentUsers.find { it.id == userId }
+        viewModelScope.launch {
+            _userResult.value = RequestResult.Loading
+            try {
+                val userDocRef = db.collection("users").document(userId)
+                // Elimina de forma atómica el ID del lugar del array 'favoritePlaces'.
+                userDocRef.update("favoritePlaces", FieldValue.arrayRemove(placeId)).await()
 
-        if (userToUpdate != null) {
-            val updatedFavorites = (userToUpdate.favoritePlaces ?: emptyList()).filter { it != placeId }
-            val updatedUser = userToUpdate.copy(favoritePlaces = updatedFavorites)
+                // Refresca el estado local del usuario desde Firestore
+                findByIdFirebase(userId)
 
-            _users.value = currentUsers.map {
-                if (it.id == userId) updatedUser else it
-            }
-
-            if (_currentUser.value?.id == userId) {
-                _currentUser.value = updatedUser
+                _userResult.value = RequestResult.Success("Lugar eliminado de favoritos")
+            } catch (e: Exception) {
+                Log.e("UsersViewModel", "Error removing favorite place", e)
+                _userResult.value = RequestResult.Failure(e.message ?: "Error al eliminar de favoritos")
             }
         }
-
-
     }
 
 }

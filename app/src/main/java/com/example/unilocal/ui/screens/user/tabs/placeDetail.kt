@@ -40,6 +40,8 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -79,8 +81,6 @@ fun PlaceDetail(
 
     val place = mainViewModel.placesViewModel.findById(placeId)
     val images = place?.images ?: emptyList()
-    val reviews = remember { mutableStateListOf<Review>() }
-    reviews.addAll(mainViewModel.reviewsViewModel.getReviewsByPlace(placeId))
 
     var selectedTabIndex by remember { mutableStateOf(0) }
 
@@ -199,15 +199,20 @@ fun ReviewsTab(
     placeId: String,
     userId: String?
 ) {
-    val reviews = reviewsViewModel.getReviewsByPlace(placeId)
+    // Comienza el listener SOLO UNA VEZ
+    LaunchedEffect(placeId) {
+        reviewsViewModel.listenForReviews(placeId)
+    }
+
+    // Observar los reviews
+    val reviews by reviewsViewModel.reviews.collectAsState()
 
     Box(modifier = Modifier.fillMaxSize()) {
 
-        // 🧾 Lista de comentarios
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 70.dp), // deja espacio para el campo de texto
+                .padding(bottom = 70.dp),
         ) {
             item {
                 Text(
@@ -231,13 +236,10 @@ fun ReviewsTab(
             }
         }
 
-        // ✏️ Campo para escribir comentario (pegado abajo)
         CreateCommentForm(
             placeId = placeId,
             userId = userId,
-            onCreateReview = {
-                reviewsViewModel.create(it)
-            },
+            onCreateReview = { reviewsViewModel.create(it) },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
@@ -358,7 +360,7 @@ fun CreateCommentForm(
 }
 
 @Composable
-fun PlaceDetail(
+fun PlaceOverviewSmall(
     nombre: String,
     categoria: String,
     ciudad: String,
