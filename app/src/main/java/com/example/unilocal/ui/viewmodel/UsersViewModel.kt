@@ -8,6 +8,8 @@ import com.example.unilocal.model.Role
 import com.example.unilocal.model.User
 import com.example.unilocal.utils.RequestResult
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,6 +28,9 @@ class UsersViewModel: ViewModel() {
     private val _userResult = MutableStateFlow<RequestResult?>(null)
     val userResult: StateFlow<RequestResult?> = _userResult.asStateFlow()
     val db = Firebase.firestore
+
+    val auth: FirebaseAuth = FirebaseAuth.getInstance()
+
     init {
         loadUsers()
         viewModelScope.launch {
@@ -52,9 +57,16 @@ class UsersViewModel: ViewModel() {
     }
 
     private suspend fun createFirebase(user: User) { //funcion async
+        val newUser = auth.createUserWithEmailAndPassword(user.email, user.password).await()
+        val uid = newUser.user?.uid ?: throw Exception("Error al obtener el UID del usuario creado")
+
+        val userCopy = user.copy(id = uid ?: "", password = "")
+
         db.collection("users")
-            .add(user)
+            .document(uid)
+            .set(userCopy)
             .await()
+
     }
     fun findbyID(id: String){
         viewModelScope.launch {
@@ -132,36 +144,37 @@ class UsersViewModel: ViewModel() {
                         )
                     },
                     onFailure = {
-                        RequestResult.Failure(it.message ?: "Error en el login"
-                        )
+                        RequestResult.Failure("Datos de acceso incorrectos")
                     }
                 )
         }
     }
 
+
+
     private suspend fun loginFirebase(email: String, password: String) {
-        val snapshot = db.collection( "users")
-            .whereEqualTo("email",  email)
-            .whereEqualTo("password", password)
-            .get()
-            .await()
-
-        if (snapshot.isEmpty) {
-            throw Exception("Usuario no encontrado")
-        }else {
-
-            snapshot.documents.mapNotNull {
-                var user = it.toObject(User::class.java)?.apply {
-                    this.id = it.id
-                }
-                _currentUser.value = user
-            }
-        }
+        val responseUser = auth.signInWithEmailAndPassword(email, password).await()
+        val uid = responseUser.user?.uid ?: throw Exception("Usuario no encontrado")
+        findByIdFirebase(uid)
     }
 
 
     fun logout() {
+        auth.signOut()
         _currentUser.value = null
+    }
+
+    fun sendPasswordReset(email: String) {
+        viewModelScope.launch {
+            _userResult.value = RequestResult.Loading
+
+            try {
+                auth.sendPasswordResetEmail(email).await()
+                _userResult.value = RequestResult.Success("Correo enviado correctamente")
+            } catch (e: Exception) {
+                _userResult.value = RequestResult.Failure(e.message ?: "Error enviando correo")
+            }
+        }
     }
 
     fun addFavoritePlace(userId: String, placeId: String) {

@@ -2,6 +2,10 @@ package com.example.unilocal.ui.nav
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -30,7 +34,7 @@ fun Navigation(
 ) {
     val context = LocalContext.current
     val navController = rememberNavController()
-    val user = SharedPrefsUtil.getPreference(context)
+    var user by remember { mutableStateOf(SharedPrefsUtil.getPreference(context)) }
 
     val startDestination = if(user.isEmpty()){
         RouteScreen.Login
@@ -56,6 +60,7 @@ fun Navigation(
                 usersViewModel = mainViewModel.usersViewModel,
                 onNavigateHome = {userId, role ->
                     SharedPrefsUtil.savePreference(context, userId, role)
+                    user = SharedPrefsUtil.getPreference(context)
                     if(role == Role.ADMIN){
                         navController.navigate(RouteScreen.HomeAdmin)
                     }else{
@@ -88,8 +93,15 @@ fun Navigation(
                 userId = user["userId"]!!,
                 mainViewModel = mainViewModel,
                 logout = {
+                    mainViewModel.usersViewModel.logout()
                     SharedPrefsUtil.clearPreference(context)
-                    navController.navigate(RouteScreen.Login)
+                    navController.navigate(RouteScreen.Login) {
+                        popUpTo(navController.graph.startDestinationId) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
+
                 }
             )
         }
@@ -111,6 +123,9 @@ fun Navigation(
                 onNavigateResetCode = {userId ->
                     navController.navigate(RouteScreen.PasswordResetCode(userId))
 
+                },
+                onLoginClick = {
+                    navController.navigate(RouteScreen.Login)
                 }
             )
         }

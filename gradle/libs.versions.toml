@@ -17,6 +17,7 @@ haze = "1.0.0"
 mapsCompose= "11.11.0"
 googleGmsGoogleServices = "4.4.4"
 firebaseFirestore = "26.0.2"
+firebaseAuth = "24.0.1"
 
 
 [libraries]
@@ -42,6 +43,7 @@ coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coi
 maps-android = {module = "com.mapbox.maps:android", version.ref="mapsCompose"}
 maps-compose = {module = "com.mapbox.extension:maps-compose", version.ref="mapsCompose"}
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
+firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

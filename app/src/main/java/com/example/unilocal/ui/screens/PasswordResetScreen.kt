@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,12 +25,15 @@ import androidx.compose.ui.unit.dp
 import com.example.unilocal.R
 import com.example.unilocal.ui.components.CustomButton
 import com.example.unilocal.ui.components.CustomTextField
+import com.example.unilocal.ui.components.OperationResultHandler
 import com.example.unilocal.ui.viewmodel.UsersViewModel
+import com.mapbox.common.toValue
 
 @Composable
 fun PasswordResetScreen(
     usersViewModel: UsersViewModel,
-    onNavigateResetCode: (String) -> Unit
+    onNavigateResetCode: (String) -> Unit,
+    onLoginClick: () -> Unit
 ){
 
     var email by remember { mutableStateOf("") }
@@ -37,6 +41,8 @@ fun PasswordResetScreen(
     var emailError by remember { mutableStateOf<String?>(null) }
 
     val context = LocalContext.current
+
+    val userResult by usersViewModel.userResult.collectAsState()
 
 
     Surface {
@@ -79,35 +85,20 @@ fun PasswordResetScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             CustomButton(
-                text = stringResource(id = R.string.btn_find_account),
+                text = stringResource(id = R.string.btn_send_email),
                 onClick = {
-                    val user = usersViewModel.findByEmail(email)
-                    var hasError = false
+                    usersViewModel.sendPasswordReset(email)
+                }
+            )
 
-                    if (email.isBlank()) {
-                        emailError = "Email is required"
-                        hasError = true
-                    } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                        emailError = "Invalid email format"
-                        hasError = true
-                    }
-
-                    if (!hasError) {
-                        if (user != null) {
-                            onNavigateResetCode(user.id)
-                            Toast.makeText(
-                                context,
-                                "Usuario encontrado",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else {
-                            Toast.makeText(
-                                context,
-                                "Usuario no encontrado",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
+            OperationResultHandler(
+                result = userResult,
+                onSuccess = {
+                    onLoginClick()
+                    usersViewModel.resetOperationResult()
+                },
+                onFailure = {
+                    usersViewModel.resetOperationResult()
                 }
             )
         }

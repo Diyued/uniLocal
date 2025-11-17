@@ -57,6 +57,7 @@ fun HomeUser(
     var title by remember { mutableStateOf(0) }
     ModalNavigationDrawer(
         drawerState = drawerState,
+        gesturesEnabled = false,
         drawerContent = {
             ModalDrawerSheet (modifier = Modifier.fillMaxWidth(0.7f)){
                 Column {

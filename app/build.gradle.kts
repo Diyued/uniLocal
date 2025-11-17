@@ -59,6 +59,7 @@ dependencies {
     implementation(libs.maps.android)
     implementation(libs.maps.compose)
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.auth)
 
 
 
