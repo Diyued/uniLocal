@@ -11,14 +11,16 @@ import com.example.unilocal.ui.viewmodel.PlacesViewModel
 
 @Composable
 fun Places(
+    userId: String,
     padding: PaddingValues,
-    mainViewModel: MainViewModel,
     onNavigateToPlaceDetail: (String) -> Unit){
-    val places by mainViewModel.placesViewModel.approvedPlaces.collectAsState()
+    val placesViewModel = LocalMainViewModel.current.placesViewModel
+    placesViewModel.getMyPlaces(userId)
+    val myPlaces by placesViewModel.myPlaces.collectAsState()
 
 
     PlacesList(
-        places = places,
+        places = myPlaces,
         padding = padding,
         onNavigateToPlaceDetail = onNavigateToPlaceDetail
     )

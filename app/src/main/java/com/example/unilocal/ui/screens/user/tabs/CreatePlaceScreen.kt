@@ -1,5 +1,6 @@
 package com.example.unilocal.ui.screens.user.tabs
 
+import android.app.TimePickerDialog
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
@@ -10,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
@@ -18,10 +21,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,7 +39,11 @@ import com.example.unilocal.model.PlaceType
 import com.example.unilocal.model.Schedule
 import com.example.unilocal.ui.components.CustomButton
 import com.example.unilocal.ui.components.CustomTextField
+import com.example.unilocal.ui.components.Map
+import com.example.unilocal.ui.components.OperationResultHandler
 import com.example.unilocal.ui.viewmodel.PlacesViewModel
+import com.mapbox.geojson.Point
+import java.sql.Date
 import java.time.DayOfWeek
 import java.time.LocalTime
 import java.util.UUID
@@ -45,7 +54,9 @@ fun CreatePlaceScreen(
     placesViewModel: PlacesViewModel,
     onNavigateBack: () -> Unit
 ) {
+    val placeResult by placesViewModel.placeResult.collectAsState()
 
+    var clickedPoint by rememberSaveable { mutableStateOf<Point?>(null) }
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
@@ -58,9 +69,6 @@ fun CreatePlaceScreen(
     val schedule = remember {
         mutableStateListOf(
             Schedule(
-                DayOfWeek.MONDAY,
-                LocalTime.of(9, 0),
-                LocalTime.of(18, 0)
             )
         )
     }
@@ -73,7 +81,7 @@ fun CreatePlaceScreen(
     }
 
     Surface {
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(24.dp),
@@ -81,55 +89,120 @@ fun CreatePlaceScreen(
             verticalArrangement = Arrangement.Center
         ) {
 
-            Text("Add a new place", style = MaterialTheme.typography.titleLarge)
-            Spacer(modifier = Modifier.height(20.dp))
+            item {
+                Text("Add a new place", style = MaterialTheme.typography.titleLarge)
+                Spacer(modifier = Modifier.height(20.dp))
+            }
 
-            CustomTextField(label = "Place name", value = title, onValueChange = { title = it })
-            Spacer(modifier = Modifier.height(12.dp))
+            item {
+                CustomTextField(label = "Place name", value = title, onValueChange = { title = it })
+                Spacer(modifier = Modifier.height(12.dp))
+            }
 
-            CustomTextField(label = "Description", value = description, onValueChange = { description = it })
-            Spacer(modifier = Modifier.height(12.dp))
+            item {
+                CustomTextField(label = "Description", value = description, onValueChange = { description = it })
+                Spacer(modifier = Modifier.height(12.dp))
+            }
 
-            CustomTextField(label = "Address", value = address, onValueChange = { address = it })
-            Spacer(modifier = Modifier.height(12.dp))
+            item {
+                CustomTextField(label = "Address", value = address, onValueChange = { address = it })
+                Spacer(modifier = Modifier.height(12.dp))
+            }
 
-            // Dropdowns
-            CityDropdown(selectedCity = city, onCitySelected = { city = it })
-            Spacer(modifier = Modifier.height(12.dp))
+            item {
+                CustomTextField(label = "Phone Number", value = phones, onValueChange = { phones = it })
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+            item {
+                ScheduleSelector(schedules = schedule)
+                Spacer(modifier = Modifier.height(20.dp))
+            }
 
-            PlaceTypeDropdown(selectedType = type, onTypeSelected = { type = it })
-            Spacer(modifier = Modifier.height(12.dp))
 
-            CustomTextField(label = "Pictures", value = pictures, onValueChange = { pictures = it })
-            Spacer(modifier = Modifier.height(12.dp))
+            item {
+                CityDropdown(selectedCity = city, onCitySelected = { city = it })
+                Spacer(modifier = Modifier.height(12.dp))
+            }
 
-            CustomButton(text = "Request", onClick = {
-                try {
-                    val parsedCity = City.valueOf(city.uppercase())
-                    val parsedType = PlaceType.valueOf(type.uppercase())
+            item {
+                PlaceTypeDropdown(selectedType = type, onTypeSelected = { type = it })
+                Spacer(modifier = Modifier.height(12.dp))
+            }
 
-                    val place = Place(
-                        id = UUID.randomUUID().toString(),
-                        title = title,
-                        description = description,
-                        city = parsedCity,
-                        address = address,
-                        location = Location(1.0, 1.0),
-                        images = listOf(),
-                        phoneNumber = phones,
-                        type = parsedType,
-                        schedules = schedule,
-                        ownerId = userId ?: ""
-                    )
-
-                    placesViewModel.create(place)
-                    Toast.makeText(context, "Place creation requested successfully", Toast.LENGTH_SHORT).show()
-                    onNavigateBack()
-
-                } catch (e: IllegalArgumentException) {
-                    Toast.makeText(context, "City or Category invalid", Toast.LENGTH_SHORT).show()
+            item {
+                CustomTextField(
+                    label = "Pictures (URLs separated by commas)",
+                    value = pictures,
+                    onValueChange = { pictures = it })
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+            item{
+            Map(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .height(400.dp),
+                activateClick = true,
+                onMapClickListener = { l ->
+                    clickedPoint = l
                 }
-            })
+
+            )
+            }
+
+            item {
+                CustomButton(text = "Request", onClick = {
+                    try {
+                        val parsedCity = City.valueOf(city.uppercase())
+                        val parsedType = PlaceType.valueOf(type.uppercase())
+                        val imageList = pictures.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+
+                        if (clickedPoint != null) {
+                            val place = Place(
+                                id = "",
+                                title = title,
+                                description = description,
+                                city = parsedCity,
+                                address = address,
+                                location = Location(
+                                    clickedPoint!!.latitude(),
+                                    clickedPoint!!.longitude()
+                                ),
+                                images = imageList,
+                                phoneNumber = phones,
+                                type = parsedType,
+                                schedules = schedule,
+                                ownerId = userId ?: ""
+                            )
+
+                        placesViewModel.create(place)
+                        Toast.makeText(context, "Place creation requested successfully", Toast.LENGTH_SHORT).show()
+                        onNavigateBack()
+                        }else{
+                            Toast.makeText(context, "Please select a location", Toast.LENGTH_SHORT).show()
+                        }
+
+                    } catch (e: IllegalArgumentException) {
+                        Toast.makeText(context, "City or Category invalid", Toast.LENGTH_SHORT).show()
+                    }
+
+                }
+                )
+                OperationResultHandler(
+                    result = placeResult,
+                    onSuccess = {
+                        onNavigateBack()
+                        placesViewModel.resetOperationResult()
+                    },
+                    onFailure = {
+                        placesViewModel.resetOperationResult()
+
+                    }
+
+                )
+
+
+
+            }
         }
     }
 
@@ -224,3 +297,126 @@ fun PlaceTypeDropdown(selectedType: String, onTypeSelected: (String) -> Unit) {
         }
     }
 }
+@Composable
+fun TimePickerField(
+    label: String,
+    time: LocalTime,
+    onTimeSelected: (LocalTime) -> Unit
+) {
+    var showPicker by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    Column {
+        Text(label)
+        Text(
+            text = time.toString(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { showPicker = true }
+                .padding(8.dp),
+        )
+
+        if (showPicker) {
+            TimePickerDialog(
+                context,
+                { _, hour, minute ->
+                    onTimeSelected(LocalTime.of(hour, minute))
+                    showPicker = false
+                },
+                time.hour,
+                time.minute,
+                true
+            ).show()
+        }
+    }
+}
+@Composable
+fun ScheduleSelector(
+    schedules: MutableList<Schedule>
+) {
+    var selectedDay by remember { mutableStateOf<DayOfWeek?>(null) }
+    var openTime by remember { mutableStateOf(LocalTime.of(9, 0)) }
+    var closeTime by remember { mutableStateOf(LocalTime.of(18, 0)) }
+    var expandedDay by remember { mutableStateOf(false) }
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+
+        Text("Schedules", style = MaterialTheme.typography.titleMedium)
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // ---- SELECT DAY ----
+        Text(
+            text = selectedDay?.name ?: "Select day",
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { expandedDay = true }
+                .padding(8.dp)
+        )
+
+        DropdownMenu(
+            expanded = expandedDay,
+            onDismissRequest = { expandedDay = false }
+        ) {
+            DayOfWeek.entries.forEach { day ->
+                DropdownMenuItem(
+                    text = { Text(day.name) },
+                    onClick = {
+                        selectedDay = day
+                        expandedDay = false
+                    }
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // ---- SELECT OPEN TIME ----
+        TimePickerField(
+            label = "Opening time",
+            time = openTime,
+            onTimeSelected = { openTime = it }
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // ---- SELECT CLOSE TIME ----
+        TimePickerField(
+            label = "Closing time",
+            time = closeTime,
+            onTimeSelected = { closeTime = it }
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Button(
+            onClick = {
+                if (selectedDay != null) {
+                    schedules.add(
+                        Schedule(
+                            day = selectedDay!!,
+
+                        )
+                    )
+                    selectedDay = null
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Add schedule")
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // ---- LIST OF ADDED SCHEDULES ----
+        Text("Added schedules:", style = MaterialTheme.typography.titleMedium)
+        Spacer(modifier = Modifier.height(8.dp))
+
+        schedules.forEach { schedule ->
+            Text(
+                "- ${schedule.day.name}: ${schedule.open} - ${schedule.close}",
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
+    }
+}
+

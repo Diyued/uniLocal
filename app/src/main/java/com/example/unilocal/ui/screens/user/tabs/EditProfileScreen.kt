@@ -6,18 +6,21 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.unilocal.model.City
 import com.example.unilocal.ui.components.CustomButton
 import com.example.unilocal.ui.components.CustomTextField
 import com.example.unilocal.ui.components.InputText
 import com.example.unilocal.ui.nav.LocalMainViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditProfileScreen(
     onConfirmClick: () -> Unit,
     userId: String?
 ) {
     val usersViewModel = LocalMainViewModel.current.usersViewModel
-    val user = usersViewModel.findbyID(userId?:"")
+    val currentUser by usersViewModel.currentUser.collectAsState()
+
 
     var fullName by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
@@ -25,14 +28,23 @@ fun EditProfileScreen(
     var city by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
+    LaunchedEffect(userId) {
+        if (userId != null) {
+            usersViewModel.findbyID(userId)
+        }
+    }
+
+    val user = currentUser
+
     LaunchedEffect(user) {
         user?.let {
             fullName = it.name
             username = it.username
             email = it.email
-            city = it.city
+            city = it.city.displayName
         }
     }
+
 
     // Estados de error
     var fullNameError by remember { mutableStateOf<String?>(null) }
@@ -115,15 +127,39 @@ fun EditProfileScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             // City
-            Column(modifier = Modifier.fillMaxWidth()) {
-                CustomTextField(
-                    label = "City *",
-                    value = city,
-                    onValueChange = {
-                        city = it
-                        cityError = null
+            var expanded by remember { mutableStateOf(false) }
+            val cities = remember { City.values().map { it.displayName } }
+            Column(modifier = Modifier.fillMaxWidth()){
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded }
+                ) {
+                    TextField(
+                        modifier = Modifier
+                            .menuAnchor()
+                            .fillMaxWidth(),
+                        value = city,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("City *") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) }
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        cities.forEach { selectionOption ->
+                            DropdownMenuItem(
+                                text = { Text(selectionOption) },
+                                onClick = {
+                                    city = selectionOption
+                                    expanded = false
+                                    cityError = null
+                                }
+                            )
+                        }
                     }
-                )
+                }
                 if (cityError != null) {
                     Text(
                         text = cityError!!,
@@ -132,6 +168,7 @@ fun EditProfileScreen(
                     )
                 }
             }
+
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -172,14 +209,17 @@ fun EditProfileScreen(
                     }
 
                     if (!hasError) {
-                        usersViewModel.update(
-                            user!!.copy(
-                                name = fullName,
-                                username = username,
-                                city = city
+                        val selectedCity = City.values().find{ it.displayName == city}
+                        if (selectedCity != null) {
+                            usersViewModel.update(
+                                user!!.copy(
+                                    name = fullName,
+                                    username = username,
+                                    city = selectedCity
+                                )
                             )
-                        )
-                        onConfirmClick()
+                            onConfirmClick()
+                        }
                     }
                 }
             )

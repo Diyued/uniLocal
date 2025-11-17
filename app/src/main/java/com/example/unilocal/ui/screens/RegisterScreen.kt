@@ -8,10 +8,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.unilocal.R
+import com.example.unilocal.model.City
 import com.example.unilocal.model.Role
 import com.example.unilocal.model.User
 import com.example.unilocal.ui.components.CustomButton
 import com.example.unilocal.ui.components.CustomTextField
+import com.example.unilocal.ui.components.OperationResultHandler
 import com.example.unilocal.ui.nav.LocalMainViewModel
 import com.example.unilocal.ui.viewmodel.MainViewModel
 import com.example.unilocal.ui.viewmodel.UsersViewModel
@@ -28,6 +30,7 @@ fun RegisterScreen(
     var email by remember { mutableStateOf("") }
     var city by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val userResult by usersViewModel.userResult.collectAsState()
 
     // Estados de error
     var nameError by remember { mutableStateOf<String?>(null) }
@@ -146,16 +149,15 @@ fun RegisterScreen(
                 text = stringResource(id = R.string.btn_sign_up),
                 onClick = {
                     val user = User(
-                        id = (usersViewModel.users.value.size + 1).toString(),
                         name = name,
                         username = username,
                         email = email,
                         role = Role.USER,
-                        city = city,
+                        city = City.ARMENIA,
                         password = password
                     )
                     usersViewModel.create(user)
-                    onLoginClick()
+
                     var hasError = false
 
                     if (name.isBlank()) {
@@ -190,6 +192,19 @@ fun RegisterScreen(
                     }
                 }
             )
+            OperationResultHandler(
+                result = userResult,
+                onSuccess = {
+                    onLoginClick()
+                    usersViewModel.resetOperationResult()
+                },
+                onFailure = {
+                    usersViewModel.resetOperationResult()
+
+                }
+
+            )
+
 
             Spacer(modifier = Modifier.height(20.dp))
 

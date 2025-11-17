@@ -2,29 +2,24 @@ package com.example.unilocal.ui.screens.user.nav
 
 import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.example.unilocal.model.User
 import com.example.unilocal.ui.screens.user.tabs.CreatePlaceScreen
 import com.example.unilocal.ui.screens.user.tabs.EditProfileScreen
 import com.example.unilocal.ui.screens.user.tabs.FavoritePlacesScreen
-import com.example.unilocal.ui.screens.user.tabs.Map
+import com.example.unilocal.ui.screens.user.tabs.MapScreen
 import com.example.unilocal.ui.screens.user.tabs.Places
 import com.example.unilocal.ui.screens.user.tabs.PlaceDetail
 import com.example.unilocal.ui.viewmodel.MainViewModel
-import com.example.unilocal.ui.viewmodel.PlacesViewModel
-import com.example.unilocal.ui.viewmodel.ReviewsViewModel
 import com.example.unilocal.utils.SharedPrefsUtil
 
 @Composable
 fun ContentUser(
+    userId: String,
     padding: PaddingValues,
     navController: NavHostController,
     mainViewModel: MainViewModel,
@@ -43,7 +38,7 @@ fun ContentUser(
         startDestination = RouteTab.Map
     ){
         composable<RouteTab.Map> {
-            Map(
+            MapScreen(
                 padding = padding,
                 onNavigateToPlaceDetail ={
                 navController.navigate(RouteTab.PlaceDetail(it))
@@ -84,8 +79,9 @@ fun ContentUser(
         composable<RouteTab.Places> {
 
             Log.d(placesViewModel.approvedPlaces.value.toString(), "PlacesViewModel")
-            Places(padding = padding,
-                mainViewModel = mainViewModel,
+            Places(
+                userId = user["userId"]!!,
+                padding = padding,
                 onNavigateToPlaceDetail ={
                     navController.navigate(RouteTab.PlaceDetail(it))
                 }

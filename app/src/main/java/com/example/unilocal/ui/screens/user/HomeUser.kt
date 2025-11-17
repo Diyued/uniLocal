@@ -43,6 +43,7 @@ import com.example.unilocal.ui.viewmodel.MainViewModel
 
 @Composable
 fun HomeUser(
+    userId: String,
     mainViewModel: MainViewModel,
     logout: () -> Unit
 ) {
@@ -141,6 +142,7 @@ fun HomeUser(
                     .padding(padding)
             ) {
                 ContentUser(
+                    userId = userId,
                     setShowFAB = {
                         showFAB = it
                     },

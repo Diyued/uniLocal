@@ -14,6 +14,7 @@ import com.example.unilocal.R
 import com.example.unilocal.model.Role
 import com.example.unilocal.ui.components.CustomButton
 import com.example.unilocal.ui.components.CustomTextField
+import com.example.unilocal.ui.components.OperationResultHandler
 import com.example.unilocal.ui.nav.LocalMainViewModel
 import com.example.unilocal.ui.viewmodel.UsersViewModel
 
@@ -29,6 +30,8 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
     var rememberMe by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val userResult by usersViewModel.userResult.collectAsState()
+
 
     // Estados de error
     var emailError by remember { mutableStateOf<String?>(null) }
@@ -122,8 +125,7 @@ fun LoginScreen(
             CustomButton(
                 text = stringResource(id = R.string.btn_login),
                 onClick = {
-                    val userLogged = usersViewModel.login(email, password)
-                    Log.d("LoginScreen", "User logged: $userLogged")
+                    usersViewModel.login(email, password)
 
 
                     var hasError = false
@@ -143,19 +145,6 @@ fun LoginScreen(
                         passwordError = "Password must be at least 6 characters"
                         hasError = true
                     }
-
-                    if (!hasError) {
-                        if (userLogged != null){
-                            onNavigateHome(userLogged.id, userLogged.role)
-                            Toast.makeText(context, "Bienvenido ${userLogged.name}", Toast.LENGTH_SHORT).show()
-                        } else {
-                            Toast.makeText(
-                                context,
-                                "Credenciales incorrectas",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
                 }
             )
 
@@ -168,6 +157,19 @@ fun LoginScreen(
                     style = MaterialTheme.typography.bodySmall
                 )
             }
+
+            OperationResultHandler(
+                result = userResult,
+                onSuccess = {
+                    onNavigateHome(usersViewModel.currentUser.value!!.id, usersViewModel.currentUser.value!!.role)
+                    usersViewModel.resetOperationResult()
+                },
+                onFailure = {
+                    usersViewModel.resetOperationResult()
+
+                }
+
+            )
         }
     }
 }
