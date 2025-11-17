@@ -138,9 +138,12 @@ fun CreatePlaceScreen(
             }
             item{
             Map(
+
+
                 modifier = Modifier
                     .fillMaxSize()
                     .height(400.dp),
+                currentUserId = userId,
                 activateClick = true,
                 onMapClickListener = { l ->
                     clickedPoint = l
