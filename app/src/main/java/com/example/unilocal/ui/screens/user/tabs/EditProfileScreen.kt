@@ -30,7 +30,7 @@ fun EditProfileScreen(
 
     LaunchedEffect(userId) {
         if (userId != null) {
-            usersViewModel.findbyID(userId)
+            usersViewModel.findById(userId)
         }
     }
 

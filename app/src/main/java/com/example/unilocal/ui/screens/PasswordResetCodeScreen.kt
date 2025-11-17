@@ -106,7 +106,7 @@ fun PasswordResetCodeScreen(
             CustomButton(
                 text = stringResource(id = R.string.btn_reset_password),
                 onClick = {
-                    val user = usersViewModel.findbyID(userId)
+                    val user = usersViewModel.findById(userId)
                     var hasError = false
 
                     if (password.isBlank()) {
