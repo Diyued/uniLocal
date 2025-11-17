@@ -25,6 +25,9 @@ class PlacesViewModel: ViewModel() {
     private val _places = MutableStateFlow(emptyList<Place>())
     val places: StateFlow<List<Place>> = _places.asStateFlow()
 
+    private val _myPlaces = MutableStateFlow<List<Place>>(emptyList())
+    val myPlaces: StateFlow<List<Place>> = _myPlaces.asStateFlow()
+
     private val _approvedPlaces = MutableStateFlow<List<Place>>(emptyList())
     val approvedPlaces: StateFlow<List<Place>> = _approvedPlaces.asStateFlow()
 
@@ -44,11 +47,46 @@ class PlacesViewModel: ViewModel() {
     private val _currentPlace = MutableStateFlow<Place?>(null)
     val currentPlace: StateFlow<Place?> = _currentPlace.asStateFlow()
 
-
     init {
-        loadPlaces()
+        getAll()
+    }
+    fun getAll(){
+        viewModelScope.launch {
+            _places.value = getAllFirebase()
+            updateFilteredLists()
+        }
     }
 
+    private suspend fun getAllFirebase(): List<Place>{
+        val snapshot = db.collection("places")
+            .get()
+            .await()
+        return snapshot.documents.mapNotNull {
+            it.toObject(Place::class.java)?.apply {
+                this.id = it.id
+            }
+        }
+
+    }
+    fun getMyPlaces(ownerId: String){
+        viewModelScope.launch {
+            _myPlaces.value = getMyPlacesFirebase(ownerId)
+            updateFilteredLists()
+        }
+    }
+
+    private suspend fun getMyPlacesFirebase(ownerId: String): List<Place>{
+        val snapshot = db.collection("places")
+            .whereEqualTo("ownerId", ownerId)
+            .get()
+            .await()
+        return snapshot.documents.mapNotNull {
+            it.toObject(Place::class.java)?.apply {
+                this.id = it.id
+            }
+        }
+
+    }
 
     fun create(place: Place) {
         viewModelScope.launch {

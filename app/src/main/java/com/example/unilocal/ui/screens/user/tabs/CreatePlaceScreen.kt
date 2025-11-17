@@ -43,6 +43,7 @@ import com.example.unilocal.ui.components.Map
 import com.example.unilocal.ui.components.OperationResultHandler
 import com.example.unilocal.ui.viewmodel.PlacesViewModel
 import com.mapbox.geojson.Point
+import java.sql.Date
 import java.time.DayOfWeek
 import java.time.LocalTime
 import java.util.UUID
@@ -63,15 +64,11 @@ fun CreatePlaceScreen(
     var type by remember { mutableStateOf("") }
     var pictures by remember { mutableStateOf("") }
     var phones by remember { mutableStateOf("") }
-    val schedules = remember { mutableStateListOf<Schedule>() }
     var showExitDialog by remember { mutableStateOf(false) }
 
     val schedule = remember {
         mutableStateListOf(
             Schedule(
-                DayOfWeek.MONDAY,
-                LocalTime.of(9, 0),
-                LocalTime.of(18, 0)
             )
         )
     }
@@ -117,7 +114,7 @@ fun CreatePlaceScreen(
                 Spacer(modifier = Modifier.height(12.dp))
             }
             item {
-                ScheduleSelector(schedules = schedules)
+                ScheduleSelector(schedules = schedule)
                 Spacer(modifier = Modifier.height(20.dp))
             }
 
@@ -397,8 +394,7 @@ fun ScheduleSelector(
                     schedules.add(
                         Schedule(
                             day = selectedDay!!,
-                            open = openTime,
-                            close = closeTime
+
                         )
                     )
                     selectedDay = null

@@ -3,17 +3,17 @@ package com.example.unilocal.model
 import java.time.LocalDateTime
 
 data class Place(
-    val id: String,
-    val title: String,
-    val description: String,
-    val address: String,
-    val city: City,
-    val location: Location,
-    val images: List<String>,
-    val phoneNumber: String,
-    val type: PlaceType,
-    val schedules: List<Schedule>,
-    val ownerId: String,
+    var id: String="",
+    val title: String="",
+    val description: String="",
+    val address: String="",
+    val city: City = City.ARMENIA,
+    val location: Location=Location(),
+    val images: List<String> = emptyList<String>(),
+    val phoneNumber: String="",
+    val type: PlaceType=PlaceType.RESTAURANT,
+    val schedules: List<Schedule> = emptyList<Schedule>(),
+    val ownerId: String="",
     val status: PlaceStatus = PlaceStatus.PENDING
 ){
 
@@ -30,7 +30,7 @@ data class Place(
             return false
         }
 
-        return now.toLocalTime().isAfter(schedule.open) && now.toLocalTime().isBefore(schedule.close)
+        return now.toLocalTime().isAfter(schedule.getOpenTime()) && now.toLocalTime().isBefore(schedule.getCloseTime())
     }
 
     fun hourClosed(): String{

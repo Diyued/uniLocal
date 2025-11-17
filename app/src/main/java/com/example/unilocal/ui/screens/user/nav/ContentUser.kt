@@ -19,6 +19,7 @@ import com.example.unilocal.utils.SharedPrefsUtil
 
 @Composable
 fun ContentUser(
+    userId: String,
     padding: PaddingValues,
     navController: NavHostController,
     mainViewModel: MainViewModel,
@@ -78,8 +79,9 @@ fun ContentUser(
         composable<RouteTab.Places> {
 
             Log.d(placesViewModel.approvedPlaces.value.toString(), "PlacesViewModel")
-            Places(padding = padding,
-                mainViewModel = mainViewModel,
+            Places(
+                userId = user["userId"]!!,
+                padding = padding,
                 onNavigateToPlaceDetail ={
                     navController.navigate(RouteTab.PlaceDetail(it))
                 }

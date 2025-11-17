@@ -85,6 +85,7 @@ fun Navigation(
 
         composable<RouteScreen.HomeUser> {
             HomeUser(
+                userId = user["userId"]!!,
                 mainViewModel = mainViewModel,
                 logout = {
                     SharedPrefsUtil.clearPreference(context)
