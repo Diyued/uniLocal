@@ -20,7 +20,8 @@ import com.example.unilocal.ui.nav.LocalMainViewModel
 fun PlacesList(
     places: List<Place>,
     padding: PaddingValues,
-    onNavigateToPlaceDetail: (String) -> Unit){
+    onNavigateToPlaceDetail: (String) -> Unit,
+    modifier: Modifier){
 
         LazyColumn(
             modifier = Modifier

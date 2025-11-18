@@ -76,15 +76,23 @@ class ReviewsViewModel : ViewModel() {
     fun create(review: Review) {
         val docRef = db.collection("reviews").document()
 
+        // Crear la reseña con el ID generado y la fecha actual
         val reviewToSave = review.copy(
             id = docRef.id,
             date = java.time.LocalDateTime.now().toString()
         )
 
-        // Simplemente creamos la reseña. El listener se encargará de actualizar la UI.
-        docRef.set(reviewToSave)
-            .addOnFailureListener { e ->
+        _reviews.value = listOf(reviewToSave) + _reviews.value
+
+        // Guardar en Firebase en background
+        viewModelScope.launch {
+            try {
+                docRef.set(reviewToSave).await()
+            } catch (e: Exception) {
+                // Si falla, quitar la reseña de la UI (rollback)
+                _reviews.value = _reviews.value.filter { it.id != reviewToSave.id }
                 e.printStackTrace()
             }
+        }
     }
 }

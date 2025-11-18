@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import com.example.unilocal.ui.components.PlacesList
 import com.example.unilocal.ui.nav.LocalMainViewModel
 import com.example.unilocal.ui.viewmodel.MainViewModel
@@ -22,6 +23,7 @@ fun Places(
     PlacesList(
         places = myPlaces,
         padding = padding,
-        onNavigateToPlaceDetail = onNavigateToPlaceDetail
+        onNavigateToPlaceDetail = onNavigateToPlaceDetail,
+        modifier = Modifier
     )
 }

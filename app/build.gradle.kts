@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.maps.compose)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.auth)
+    implementation(libs.cloudinary.android)
 
 
 

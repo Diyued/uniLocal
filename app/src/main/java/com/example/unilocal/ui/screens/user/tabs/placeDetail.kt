@@ -27,23 +27,19 @@ import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -56,17 +52,14 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.example.unilocal.model.Schedule
-import com.example.unilocal.ui.nav.LocalMainViewModel
 import com.example.unilocal.R
 import com.example.unilocal.model.Place
 import com.example.unilocal.model.Review
+import com.example.unilocal.model.Schedule
+import com.example.unilocal.ui.nav.LocalMainViewModel
 import com.example.unilocal.ui.viewmodel.MainViewModel
-import com.example.unilocal.ui.viewmodel.PlacesViewModel
 import com.example.unilocal.ui.viewmodel.ReviewsViewModel
-import com.example.unilocal.ui.viewmodel.UsersViewModel
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -77,8 +70,6 @@ fun PlaceDetail(
     placeId: String,
     mainViewModel: MainViewModel
 ) {
-
-
     val place = mainViewModel.placesViewModel.findById(placeId)
     val images = place?.images ?: emptyList()
 
@@ -93,7 +84,6 @@ fun PlaceDetail(
                 .padding(paddingValues)
         ) {
 
-            // 🖼️ Grid de imágenes del lugar
             LazyHorizontalGrid(
                 rows = GridCells.Fixed(2),
                 modifier = Modifier
@@ -127,7 +117,6 @@ fun PlaceDetail(
                 }
             }
 
-            // 🧭 Tabs de navegación
             TabRow(
                 selectedTabIndex = selectedTabIndex,
                 containerColor = MaterialTheme.colorScheme.background
@@ -144,7 +133,6 @@ fun PlaceDetail(
             val usersViewModel = mainViewModel.usersViewModel
             val context = LocalContext.current
 
-            // 📄 Contenido según tab
             when (selectedTabIndex) {
                 0 -> OverviewTab(place)
                 1 -> ReviewsTab(mainViewModel.reviewsViewModel, placeId, userId)
@@ -193,18 +181,17 @@ fun OverviewTab(place: Place?) {
         }
     }
 }
+
 @Composable
 fun ReviewsTab(
     reviewsViewModel: ReviewsViewModel,
     placeId: String,
     userId: String?
 ) {
-    // Comienza el listener SOLO UNA VEZ
     LaunchedEffect(placeId) {
         reviewsViewModel.listenForReviews(placeId)
     }
 
-    // Observar los reviews
     val reviews by reviewsViewModel.reviews.collectAsState()
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -247,7 +234,6 @@ fun ReviewsTab(
     }
 }
 
-
 @Composable
 fun MoreTab(
     onNavigate: (String) -> Unit
@@ -270,7 +256,6 @@ fun MoreTab(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // --- Opción 2: Dejar reseña ---
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
@@ -308,10 +293,9 @@ fun CommentList(
                 }
             )
         }
-
     }
-
 }
+
 @Composable
 fun CreateCommentForm(
     placeId: String,
@@ -320,9 +304,14 @@ fun CreateCommentForm(
     modifier: Modifier = Modifier
 ) {
     val mainViewModel = LocalMainViewModel.current
-    val currentUser = mainViewModel.usersViewModel.getUserById(userId ?: "")
+    val currentUser by mainViewModel.usersViewModel.currentUser.collectAsState()
 
     var comment by remember { mutableStateOf("") }
+
+    // 🔍 Debug: Ver qué usuario está logueado
+    LaunchedEffect(currentUser) {
+        println("🔍 DEBUG CreateCommentForm - currentUser: ${currentUser?.name}, userId: $userId")
+    }
 
     Row(
         modifier = modifier
@@ -338,24 +327,24 @@ fun CreateCommentForm(
 
         IconButton(
             onClick = {
-                if (comment.isNotEmpty()) {
+                if (comment.isNotEmpty() && currentUser != null) {
                     val review = Review(
                         id = UUID.randomUUID().toString(),
-                        userID = userId ?: "",
-                        username = currentUser?.username ?: "Unknown User",
+                        userID = currentUser?.id ?: userId ?: "",
+                        username = currentUser?.name ?: "Unknown User",
                         placeID = placeId,
                         rating = 5,
                         comment = comment,
                         date = LocalDateTime.now().toString()
                     )
-                    onCreateReview(review)   // ← aquí el viewModel lo agrega
+                    println("📝 DEBUG - Creando review con username: ${review.username}")
+                    onCreateReview(review)
                     comment = ""
                 }
             }
         ) {
             Icon(Icons.Default.Send, contentDescription = null)
         }
-
     }
 }
 
@@ -400,6 +389,5 @@ fun PlaceOverviewSmall(
                 )
             }
         }
-
     }
 }

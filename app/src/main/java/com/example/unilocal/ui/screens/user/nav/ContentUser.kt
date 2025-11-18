@@ -63,7 +63,10 @@ fun ContentUser(
                 onNavigateBack = {
                     navController.navigate(RouteTab.Map)
                 },
-                placesViewModel = placesViewModel
+                placesViewModel = placesViewModel,
+                onImageSelected = {
+                    imageUrl ->
+                }
             )
         }
         composable<RouteTab.EditProfileScreen> {

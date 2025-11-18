@@ -1,8 +1,14 @@
 package com.example.unilocal.ui.screens.user.tabs
 
+import android.Manifest
 import android.app.TimePickerDialog
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -26,12 +33,18 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import coil.compose.AsyncImage
+import com.cloudinary.Cloudinary
+import com.cloudinary.utils.ObjectUtils
 import com.example.unilocal.model.City
 import com.example.unilocal.model.Location
 import com.example.unilocal.model.Place
@@ -43,16 +56,20 @@ import com.example.unilocal.ui.components.Map
 import com.example.unilocal.ui.components.OperationResultHandler
 import com.example.unilocal.ui.viewmodel.PlacesViewModel
 import com.mapbox.geojson.Point
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.sql.Date
 import java.time.DayOfWeek
 import java.time.LocalTime
+import com.example.unilocal.R
 import java.util.UUID
 
 @Composable
 fun CreatePlaceScreen(
     userId: String?,
     placesViewModel: PlacesViewModel,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onImageSelected: (String) -> Unit
 ) {
     val placeResult by placesViewModel.placeResult.collectAsState()
 
@@ -62,9 +79,45 @@ fun CreatePlaceScreen(
     var address by remember { mutableStateOf("") }
     var city by remember { mutableStateOf("") }
     var type by remember { mutableStateOf("") }
-    var pictures by remember { mutableStateOf("") }
     var phones by remember { mutableStateOf("") }
     var showExitDialog by remember { mutableStateOf(false) }
+    var images by remember { mutableStateOf("") }
+    val context = LocalContext.current
+
+    val config = mapOf(
+        "cloud_name" to "dqefyfg2m",
+        "api_key" to "394926646474592",
+        "api_secret" to "LtiJCWmvGNoQvQ9nZ5_kuJU1kn4"
+    )
+
+    val scope = rememberCoroutineScope()
+    val cloudinary = Cloudinary(config)
+
+    val fileLauncher = rememberLauncherForActivityResult (
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            scope.launch(Dispatchers.IO) {
+                val inputStream = context.contentResolver.openInputStream(it)
+                inputStream?.use { stream ->
+                    val result = cloudinary.uploader().upload(stream, ObjectUtils.emptyMap())
+                    val imageUrl = result["secure_url"].toString()
+                images = if (images.isNotEmpty()) "$images,$imageUrl" else imageUrl
+                onImageSelected(imageUrl)
+                }
+            }
+        }
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) {
+        if (it) {
+            Toast.makeText(context, "Permiso concedido", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(context, "Permiso denegado", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     val schedule = remember {
         mutableStateListOf(
@@ -73,7 +126,7 @@ fun CreatePlaceScreen(
         )
     }
 
-    val context = LocalContext.current
+
 
     // Back button handler
     BackHandler(!showExitDialog) {
@@ -129,17 +182,9 @@ fun CreatePlaceScreen(
                 Spacer(modifier = Modifier.height(12.dp))
             }
 
-            item {
-                CustomTextField(
-                    label = "Pictures (URLs separated by commas)",
-                    value = pictures,
-                    onValueChange = { pictures = it })
-                Spacer(modifier = Modifier.height(12.dp))
-            }
+
             item{
             Map(
-
-
                 modifier = Modifier
                     .fillMaxSize()
                     .height(400.dp),
@@ -150,14 +195,49 @@ fun CreatePlaceScreen(
                 }
 
             )
+                Spacer(modifier = Modifier.height(12.dp))
             }
+
+            item {
+                CustomButton(
+                    text = stringResource(id = R.string.btn_add_image),
+                    onClick = {
+                        val permissionCheckResult = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+                            ContextCompat.checkSelfPermission(context, Manifest.permission.READ_MEDIA_IMAGES)
+                        } else {
+                            ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)
+                        }
+
+                        if(permissionCheckResult == PackageManager.PERMISSION_GRANTED){
+                            fileLauncher.launch("image/*")
+                        } else {
+                            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+                                permissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
+                            } else {
+                                permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                            }
+                        }
+
+                    }
+                )
+
+            }
+
+            item {
+                AsyncImage(
+                    modifier = Modifier.width(100.dp),
+                    model = images,
+                    contentDescription = "Image"
+                )
+            }
+
 
             item {
                 CustomButton(text = "Request", onClick = {
                     try {
                         val parsedCity = City.valueOf(city.uppercase())
                         val parsedType = PlaceType.valueOf(type.uppercase())
-                        val imageList = pictures.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+                        val imageList = images.split(",").map { it.trim() }.filter { it.isNotEmpty() }
 
                         if (clickedPoint != null) {
                             val place = Place(

@@ -28,7 +28,6 @@ fun LoginScreen(
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var rememberMe by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val userResult by usersViewModel.userResult.collectAsState()
 
@@ -98,20 +97,11 @@ fun LoginScreen(
             }
 
             Spacer(modifier = Modifier.height(12.dp))
-
-            // Remember me + Forgot password
+            
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Checkbox(
-                    checked = rememberMe,
-                    onCheckedChange = { rememberMe = it }
-                )
-                Text(
-                    text = stringResource(id = R.string.checkbox_remember_me),
-                    modifier = Modifier.weight(1f)
-                )
                 TextButton(onClick = {
                     onNavigateToPasswordReset()
                 }) {
@@ -161,14 +151,16 @@ fun LoginScreen(
             OperationResultHandler(
                 result = userResult,
                 onSuccess = {
-                    onNavigateHome(usersViewModel.currentUser.value!!.id, usersViewModel.currentUser.value!!.role)
+                    usersViewModel.currentUser.value?.let { user ->
+                        onNavigateHome(user.id, user.role)
+                    }
                     usersViewModel.resetOperationResult()
                 },
                 onFailure = {
+                    Toast.makeText(context, "Error de inicio de sesión. Por favor, revisa tus credenciales.", Toast.LENGTH_LONG).show()
                     usersViewModel.resetOperationResult()
 
                 }
-
             )
         }
     }

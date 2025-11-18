@@ -99,7 +99,13 @@ fun Map(
         }
 
         // Filtramos los lugares que no estén rechazados
-        val placesToShow = places.filter { it.status == PlaceStatus.APPROVED }
+        val placesToShow = places
+            .filter { it.status == PlaceStatus.APPROVED }
+            .filter { place ->
+                val lat = place.location.latitude
+                val lng = place.location.longitude
+                lat in -90.0..90.0 && lng in -180.0..180.0
+            }
 
 
         if(placesToShow.isNotEmpty()){
